@@ -11,6 +11,7 @@ import Link from "next/link";
 import { register, RegisterDTO } from "../../services/endpoint/authService";
 import { redirectToFacebookAuth, redirectToGoogleAuth } from "../../services/endpoint/otherAuthService";
 import spinnerloading from "./../../../public/isloading.svg";
+import { Eye, EyeOff } from "lucide-react";
 
 
 export default function Register() {
@@ -19,6 +20,7 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [emailSent, setEmailSent] = useState(false);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
   const handleSendEmail = () => {
     setEmailSent(true); 
@@ -46,6 +48,13 @@ export default function Register() {
   const handleLoginWithFacebook = async () =>{
     redirectToFacebookAuth();
   };
+  const alternarVisibilidadeSenha = () => {
+    setMostrarSenha(!mostrarSenha);
+  };
+
+  function setSenha(value: string): void {
+    throw new Error("Function not implemented.");
+  }
 
   return (
     <div className="min-h-screen w-full dark flex">
@@ -73,11 +82,23 @@ export default function Register() {
             </div>
             <div className="space-y-2 w-full">
               <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" placeholder="Digite uma senha" onChange={(e) => setPassword(e.target.value)} className="w-full" />
-            </div>
-            <div className="space-y-2 w-full">
-              <Label htmlFor="confirmPassword">Confirme a senha</Label>
-              <Input id="confirmPassword" type="password" placeholder="Confirme a sua senha" onChange={(e) => setConfirmPassword(e.target.value)} className="w-full" />
+              <Label htmlFor="senha">Senha</Label>
+              <div className="relative">
+                <Input 
+                  id="senha" 
+                  type={mostrarSenha ? "text" : "password"} 
+                  placeholder="Insira sua senha" 
+                  className="w-full pr-10" 
+                  onChange={(e) => setSenha(e.target.value)} 
+                />
+                <button 
+                  type="button"
+                  onClick={alternarVisibilidadeSenha}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600"
+                >
+                  {mostrarSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
             </div>
             <Button className="w-full" onClick={handleRegisterWithEmail} disabled={isLoading}>
               {isLoading ? (
