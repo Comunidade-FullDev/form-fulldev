@@ -21,7 +21,7 @@ const generateFakeForms = (num: number): Form[] => {
   for (let i = 0; i < num; i++) {
     forms.push({
       id: String(i + 1),
-      name: `Formulário ${i + 1}`,
+      title: `Formulário ${i + 1}`,
       createdAt: new Date(2024, 11, 7 - (i % 30)),
       responsesCount: Math.floor(Math.random() * 100),
     });
@@ -31,7 +31,7 @@ const generateFakeForms = (num: number): Form[] => {
 
 const searchForms = (forms: Form[], searchTerm: string) => {
   if (!searchTerm) return forms;
-  return forms.filter(form => form.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  return forms.filter(form => form.title.toLowerCase().includes(searchTerm.toLowerCase()));
 };
 
 export default function Forms() {
@@ -94,7 +94,7 @@ export default function Forms() {
           <TableBody>
             {currentForms.map((form) => (
               <TableRow key={form.id}>
-                <TableCell>{form.name}</TableCell>
+                <TableCell>{form.title}</TableCell>
                 <TableCell className="hidden sm:table-cell">
                   {form.createdAt.toLocaleDateString('pt-BR')}
                 </TableCell>

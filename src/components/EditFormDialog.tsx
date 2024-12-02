@@ -28,7 +28,7 @@ export function EditFormDialog({
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="name">Form Name</Label>
-            <Input id="name" defaultValue={form.name} />
+            <Input id="name" defaultValue={form.title} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="description">Description</Label>

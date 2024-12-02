@@ -1,6 +1,6 @@
 export interface Form {
   id: string
-  name: string
+  title: string
   createdAt: Date
   responsesCount: number
 }
