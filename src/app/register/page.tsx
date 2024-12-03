@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import EmailSentAlert from "@/components/Alerts/EmaillSend";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Image from "next/image";
@@ -12,6 +11,7 @@ import { register, RegisterDTO } from "../../services/endpoint/authService";
 import { redirectToFacebookAuth, redirectToGoogleAuth } from "../../services/endpoint/otherAuthService";
 import spinnerloading from "./../../../public/isloading.svg";
 import { Eye, EyeOff } from "lucide-react";
+import { SuccessAlert } from "@/components/Alerts/EmailSend";
 
 
 export default function Register() {
@@ -67,7 +67,7 @@ export default function Register() {
       <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
       <Card className="w-full max-w-md mx-auto overflow-hidden rounded-lg shadow-lg">
       {emailSent && (
-              <EmailSentAlert />  //fiz um modelo apenas
+            <SuccessAlert isOpen={emailSent} onClose={() => setEmailSent(false)} />  
             )}
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Criar uma nova conta</CardTitle>
@@ -82,7 +82,6 @@ export default function Register() {
             </div>
             <div className="space-y-2 w-full">
               <Label htmlFor="password">Senha</Label>
-              <Label htmlFor="senha">Senha</Label>
               <div className="relative">
                 <Input 
                   id="senha" 

@@ -1,5 +1,5 @@
 'use client'
-import EmailSentAlert from "@/components/Alerts/EmaillSend";
+import EmailSentAlert from "@/components/Alerts/EmailSend";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
