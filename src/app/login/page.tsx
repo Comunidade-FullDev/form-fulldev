@@ -10,14 +10,14 @@ import Link from "next/link";
 import spinnerloading from "./../../../public/isloading.svg";
 import { login, AuthDTO } from "../../services/endpoint/authService";
 import { redirectToFacebookAuth, redirectToGoogleAuth } from "../../services/endpoint/otherAuthService";
-import { Eye, EyeOff } from "lucide-react"; // Importar ícones de olho
+import { Eye, EyeOff } from "lucide-react"; 
 
 export default function LoginPage() {
   const [estaCarregando, setEstaCarregando] = useState(false);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mensagem, setMensagem] = useState<string | null>(null);
-  const [mostrarSenha, setMostrarSenha] = useState(false); // Novo estado para visibilidade da senha
+  const [mostrarSenha, setMostrarSenha] = useState(false); 
 
   const handleLoginComEmail = async () => {
     setEstaCarregando(true);
