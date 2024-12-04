@@ -16,6 +16,8 @@ interface PageManagerProps {
   deletePage: (pageId: number) => void;
 }
 
+
+
 export function PageManager({ pages, activePage, setActivePage, addPage, deletePage }: PageManagerProps) {
 
   const handleDeletePage = (pageId: number) => {
