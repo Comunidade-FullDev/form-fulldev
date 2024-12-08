@@ -19,7 +19,7 @@ export interface LoginResponseDTO {
 export const login = async (authData: AuthDTO): Promise<String> => {
 
   const response = await api.post<LoginResponseDTO>('/auth/login', authData);
-  Cookies.set("token", response.data.token, { expires: 1})
+  Cookies.set("token", response.data.token)
   
   return "login efetuado com sucesso";
 };
