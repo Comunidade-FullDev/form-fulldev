@@ -1,5 +1,5 @@
 'use client'
-import { SuccessAlert } from "@/components/Alerts/EmailSend";
+import EmailSentAlert from "@/components/Alerts/EmaillSendResetPassword";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -31,7 +31,7 @@ export default function RecoverAccount() {
           </CardHeader>
           <CardContent className="space-y-4 w-full">
             {emailSent && (
-            <SuccessAlert isOpen={emailSent} onClose={() => setEmailSent(false)} />  
+              <EmailSentAlert />
             )}
             <div className="space-y-2 w-full">
               <Label htmlFor="email">Seu endereço de email</Label>
