@@ -12,5 +12,6 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/workspace'], 
+  matcher: ['/workspace', '/form/builder', '/form/create',], 
+
 };
