@@ -82,7 +82,7 @@ export function FormPreview({ pages }: FormPreviewProps) {
   const renderRadio = (element: FormElement) => (
     <RadioGroup
       value={answers[element.id] as string || ''}
-      onValueChange={(value) => handleAnswer(element.id, value)}
+      onValueChange={(value: string | string[]) => handleAnswer(element.id, value)}
     >
       {element.options.map((option, index) => (
         <div key={index} className="flex items-center space-x-2 mb-4">
@@ -109,7 +109,7 @@ export function FormPreview({ pages }: FormPreviewProps) {
           <Checkbox
             id={`preview-checkbox-${element.id}-${index}`}
             checked={(answers[element.id] as string[] || []).includes(option)}
-            onCheckedChange={(checked) => {
+            onCheckedChange={(checked: any) => {
               const currentAnswers = answers[element.id] as string[] || []
               const updatedAnswers = checked
                 ? [...currentAnswers, option]
