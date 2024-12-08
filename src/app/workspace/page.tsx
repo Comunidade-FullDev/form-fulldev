@@ -16,31 +16,50 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Link from "next/link";
 import { EditFormDialog } from "@/components/EditFormDialog";
 import { DeleteFormDialog } from "@/components/DeleteFormDialog";
-import { Form } from '@/types/Form';
-import Image from 'next/image';
-import { getForms } from '@/services/endpoint/form';
+import { Form, FormWorkspace } from '@/types/Form';
+import { deleteForm, getForms } from '@/services/endpoint/form';
 import SidebarMenu from '@/components/SidebarMenu';
 import Settings from '@/components/Dashboard/settings';
-import Forms from '@/components/Dashboard/forms';
 import PublishedForms from '@/components/Dashboard/publishedForms';
+import { useRouter } from 'next/navigation';
+import { ShareModal } from '@/components/CopyAndShare';
 
 export default function Workspace() {
+  const router = useRouter();
+
   const [forms, setForms] = useState<Form[]>([]);
+  const [filteredForms, setFilteredForms] = useState<Form[]>([]);
   const [editingForm, setEditingForm] = useState<Form | null>(null);
   const [deletingForm, setDeletingForm] = useState<Form | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const handleDelete = (id: string) => {
-    setForms((prev) => prev.filter((form) => form.id !== id));
-    setDeletingForm(null);
+  const handleDelete = async (id: string) => {
+    try {
+      const deleteForms = await deleteForm(parseInt(id, 10));
+      setForms((prev) => prev.filter((form) => form.id !== id));
+      setFilteredForms((prev) => prev.filter((form) => form.id !== id));
+      setDeletingForm(null);
+    } catch (error) {
+      console.error('Erro ao deletar o formulário', error);
+    }
   };
 
   const loadForms = async () => {
     try {
       const fetchedForms = await getForms();
       setForms(fetchedForms);
+      setFilteredForms(fetchedForms);
     } catch (error) {
       console.error('Erro ao carregar os formulários', error);
     }
+  };
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const searchValue = event.target.value;
+    setSearchTerm(searchValue);
+    const filtered = forms.filter((form) =>
+      form.title.toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setFilteredForms(filtered);
   };
 
   useEffect(() => {
@@ -80,6 +99,8 @@ export default function Workspace() {
                     placeholder="Buscar formulários"
                     className="max-w-xs w-full"
                     type="search"
+                    value={searchTerm}
+                    onChange={handleSearch}
                   />
                   <div className="flex flex-wrap gap-2 w-max">
                     <Button variant="outline" size="sm" className="flex-grow sm:flex-grow-0">
@@ -106,13 +127,23 @@ export default function Workspace() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {forms.map((form) => (
+                    {filteredForms.map((form) => (
                       <TableRow key={form.id}>
-                        <TableCell>{form.title}</TableCell>
-                        <TableCell className="hidden sm:table-cell">
-                          {new Date(form.createdAt).toLocaleDateString('pt-BR')}
+                        <TableCell>
+                          <Link href={`/form/builder?id=${form.id}`} passHref>
+                            {form.title}
+                          </Link>
                         </TableCell>
-                        <TableCell>{form.responsesCount} respostas</TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <Link href={`/form/builder?id=${form.id}`} passHref>
+                            {new Date(form.createdAt).toLocaleDateString('pt-BR')}
+                          </Link>
+                        </TableCell>
+                        <TableCell>
+                          <Link href={`/form/builder?id=${form.id}`} passHref>
+                            {form.responsesCount} respostas
+                          </Link>
+                        </TableCell>
                         <TableCell>
                           <div className="flex justify-end gap-2">
                             <Button
@@ -122,9 +153,7 @@ export default function Workspace() {
                             >
                               <FileEdit className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="icon">
-                              <Share2 className="h-4 w-4" />
-                            </Button>
+                            <ShareModal link={form.link} />
                             <Button
                               variant="ghost"
                               size="icon"
