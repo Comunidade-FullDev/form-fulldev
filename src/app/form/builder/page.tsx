@@ -3,11 +3,9 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +18,6 @@ import { FormPreview } from "@/components/FormBuilder/form-preview"
 import { PageManager } from "@/components/FormBuilder/page-manager"
 import { createForm, getFormById, updateForm, publishFormById } from "@/services/endpoint/form"
 import StatisticsPage from "@/components/FormBuilder/statistics"
-import { Description } from "@radix-ui/react-dialog"
 import Link from "next/link";
 import { useRouter } from "next/navigation"
 import { FaSave } from "react-icons/fa"
@@ -114,6 +111,7 @@ export default function FormBuilder() {
   useEffect(() => {
     localStorage.setItem("formPages", JSON.stringify(pages));
     localStorage.setItem("activePage", activePage.toString());
+    console.log("Páginas salvas no localStorage", pages);
   }, [pages, activePage]);
 
   const toggleLeftSidebar = () => setShowLeftSidebar(!showLeftSidebar)
@@ -138,20 +136,30 @@ export default function FormBuilder() {
     setActiveElement(newElement.id);
   };
 
-
-
-
   const updateFormElement = (id: number, updates: Partial<FormElement>) => {
+    console.log("Antes de atualizar:", pages);
+  
     const updatedPages = pages.map(page => ({
       ...page,
-      elements: page.elements.map(el =>
+      elements: page.elements.map(el => 
         el.id === id ? { ...el, ...updates } : el
       ),
     }));
-
+  
+    console.log("Após atualizar:", updatedPages);
+  
+    console.log("form atualizado:", updatedPages.map(page => ({
+      ...page,
+      elements: page.elements.map(el => ({
+        question: el.question,
+        required: el.required,
+      })),
+    })));
+  
     setPages(updatedPages);
     localStorage.setItem("formPages", JSON.stringify(updatedPages));
   };
+  
 
 
   const updateOptions = (elementId: number, newOptions: string[]) => {
@@ -226,6 +234,7 @@ export default function FormBuilder() {
         description: formDescription,
         questions: pages.flatMap(page =>
           page.elements.map(element => ({
+            
             title: element.question,
             type: element.type,
             questionDescription: element.questionDescription,
@@ -238,9 +247,12 @@ export default function FormBuilder() {
         ),
       };
 
+      console.log("Form DTO enviado para a API:", formDTO);
+
 
       try {
         await updateForm(parseInt(formData.id, 10), formDTO);
+
         router.push("../workspace");
       } catch (error) {
         console.error("Erro ao atualizar o formulário:", error);
