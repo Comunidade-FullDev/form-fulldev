@@ -17,7 +17,7 @@ interface FormElement {
   question: string;
   options: string[];
   required: boolean;
-  description: string;
+  questionDescription: string;
 }
 
 interface FormPage {
@@ -166,9 +166,9 @@ export function FormPreview({ pages }: FormPreviewProps) {
                   <h2 className="text-2xl md:text-3xl font-bold mb-4">
                     {currentElement?.question}
                   </h2>
-                  {currentElement?.description && (
+                  {currentElement?.questionDescription && (
                     <p className="text-lg md:text-xl mb-8 text-muted-foreground">
-                      {currentElement.description}
+                      {currentElement.questionDescription}
                     </p>
                   )}
                   {currentElement && renderElement(currentElement)}
