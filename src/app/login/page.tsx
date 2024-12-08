@@ -35,9 +35,6 @@ export default function LoginPage() {
         }
       }, 2000);
   };
-  
-
-  
 
   const handleLoginWithGoogle = async () =>{
     redirectToGoogleAuth();
