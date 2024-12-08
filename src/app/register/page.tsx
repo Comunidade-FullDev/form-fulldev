@@ -38,10 +38,8 @@ export default function Register() {
       
       try {
         const authData: RegisterDTO = { email, password };
-        const response = await register(authData);
-        console.log(response)
+        await register(authData);
         setIsAlertOpen(true);
-
       } catch (error) {
         console.log("erro ao fazer login " + error)
       }
@@ -60,7 +58,6 @@ export default function Register() {
   
     if (id === "password") setPassword(value);
     if (id === "confirmPassword") setConfirmPassword(value);
-  
     if (id === "password" || id === "confirmPassword") {
       setPasswordMismatch(value && (id === "password" ? value !== confirmPassword : password !== value));
     }
