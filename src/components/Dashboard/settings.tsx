@@ -25,22 +25,6 @@ import { updateDefaultFormSettings } from "@/services/endpoint/form";
 import { Label } from "../ui/label";
 import Modal from "../ui/modal-password";
 
-// const Modal = ({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) => {
-//   return (
-//     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-//       <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-md">
-//         <h2 className="text-lg font-bold mb-4">{title}</h2>
-//         {children}
-//         <div className="mt-4 text-right">
-//           <Button onClick={onClose} variant="outline">
-//             Cancelar
-//           </Button>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
 const formSchema = z.object({
   workspaceName: z.string().min(2, {
     message: "O nome do espaço de trabalho deve ter pelo menos 2 caracteres.",
@@ -207,7 +191,7 @@ export default function Settings() {
         <Button type="submit">Salvar Alterações</Button>
       </form>
       {isModalOpen && (
-        <Modal title="Definir Senha" onClose={handleModalClose}>
+        <Modal title="Definir Senha">
           <p>Digite a senha para proteger o formulário:</p>
           
           <div className="space-y-2 w-full">
