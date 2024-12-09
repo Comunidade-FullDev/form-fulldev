@@ -43,13 +43,14 @@ export default function FormPreview() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showLoginModal, setShowLoginModal] = useState(false); 
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState("");
   const [loginType, setLoginType] = useState("");
   const question = questions[currentQuestion];
   const [idPublic, setIdPublic] = useState("")
   const totalQuestions = questions.length;
+  const [messagePassword, setMessagePassword] = useState("");
 
 
   useEffect(() => {
@@ -59,34 +60,39 @@ export default function FormPreview() {
 
       const formId = urlParams.get("form") || "";
       const formLogin = urlParams.get("logintype");
-      setIdPublic(formId)
+      setIdPublic(formId);
 
       const valueLoginType = formLogin?.split('?')[0];
       setLoginType(valueLoginType || "");
 
-      if (valueLoginType === "private" && !Cookies.get("token")) {
-        setShowLoginModal(true);
-      } else if (valueLoginType === "password") {
-        setShowPasswordModal(true);
-      }else if (valueLoginType === "public") {
-        fetchFormData(formId, valueLoginType || "", password);
+      if (valueLoginType === "private") {
+        if (!Cookies.get("token")) {
+          setShowLoginModal(true);
+        }
+        else {
+          fetchFormData(formId, valueLoginType || "", "");
+        }
       }
-      fetchFormData(formId, valueLoginType || "", localStorage.getItem("passwordForm") || "");
 
+      if (valueLoginType === "password") {
+        localStorage.removeItem("passwordForm")
 
+        if (!localStorage.getItem("passwordForm")) {
+          setShowPasswordModal(true);
+        }
+      }
+
+      if (valueLoginType === "public") {
+        fetchFormData(formId, valueLoginType || "", "");
+      }
     }
-  }, [password]);
-
-  const handleModalClose = () => {
-    setShowPasswordModal(false);
-    setShowLoginModal(false);
-    
-  };
+  }, []);
 
   const fetchFormData = async (id: string, formHasLoginType: string, password: string) => {
     try {
-      const data = await getPublicForm(id, formHasLoginType, password || "");
-      console.log(data)
+      localStorage.removeItem("passwordForm")
+      setLoading(true);
+      const data = await getPublicForm(id, formHasLoginType, password);
       const mappedQuestions = data.questions.map((q) => ({
         id: q.id.toString(),
         type: q.type,
@@ -96,27 +102,40 @@ export default function FormPreview() {
         placeholder: q.placeholder || "",
         options: q.type === 'radio' || q.type === 'checkbox' ? q.options : undefined,
       }));
-      console.log("Perguntas mapeadas:", mappedQuestions);
-
       setQuestions(mappedQuestions);
-      setLoading(false);
     } catch (error) {
-      console.error("Erro ao carregar os dados do formulário:", error);
-      setError("Não foi possível carregar o formulário.");
+      setError("Falha ao carregar formulário. Verifique sua autenticação.");
+    } finally {
       setLoading(false);
     }
   };
 
   const handlePasswordSubmit = async () => {
     try {
-      await fetchFormData(idPublic, "password", password);
+      const response = await getPublicForm(idPublic, "password", password);
+      setQuestions(
+        response.questions.map((q) => ({
+          id: q.id.toString(),
+          type: q.type,
+          title: q.title || "",
+          questionDescription: q.questionDescription || "",
+          required: q.required || false,
+          placeholder: q.placeholder || "",
+          options: q.type === "radio" || q.type === "checkbox" ? q.options : undefined,
+        }))
+      )
       setShowPasswordModal(false);
-      localStorage.setItem("passwordForm", JSON.stringify(password))
+      localStorage.setItem("passwordForm", password);
     } catch (err) {
-      console.error("Erro ao carregar formulário com senha", err);
+      setShowPasswordModal(true);
+      setMessagePassword("Senha inválida. Por favor, tente novamente.");
+      // console.error("Erro ao carregar formulário com senha", err);
+    }finally {
+      setLoading(false);
     }
-  };
-  
+
+  }
+
 
   const handleSubmit = async () => {
     const params = new URLSearchParams(window.location.search);
@@ -149,80 +168,84 @@ export default function FormPreview() {
 
   const handlePrevious = () => {
     if (currentQuestion > 0) {
-      setCurrentQuestion((curr) => curr - 1);
+      setCurrentQuestion((curr) => curr - 1)
     }
-  };
+  }
 
   const updateResponse = (questionId: string, value: string | string[] | number) => {
     setResponses((prev) => ({
       ...prev,
       [questionId]: value,
-    }));
-  };
+    }))
+  }
 
   const isQuestionValid = (question: Question) => {
     if (!question.required) return true;
     const response = responses[question.id];
     if (Array.isArray(response)) return response.length > 0;
     return response !== undefined && response !== "";
-  };
+  }
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && isQuestionValid(question)) {
         handleNext();
       }
-    };
-    window.addEventListener("keydown", handleKeyDown);
+    }
+    window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown);
 
-    
-  }, [handleNext, question, isQuestionValid]);
 
- 
+  }, [handleNext, question, isQuestionValid])
+
+
+  if (loginType === "private" && !Cookies.get("token")) {
+    return <>
+      {showLoginModal && <LoginModal />}
+    </>
+  }
+
   if (error) {
     return <div>{error}</div>;
   }
 
-  if(loginType === "private"){
-    return  <>
-       {showLoginModal && <LoginModal />} </>
-}
+  if (loginType === "password" && !localStorage.getItem("passwordForm")) {
+    return (
+      <>
+        {showPasswordModal && (
+          <ModalPassword title="Entrar com a senha">
+            <p>Digite a senha para acessar o formulário:</p>
+            <div className="space-y-2 w-full">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Insira a senha do formulário aqui"
+                className="w-full"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              {error && <p className="text-red-600">{error}</p>}
+            </div>
+            {messagePassword && <p className="text-red-500 text-center">{messagePassword}</p>}
 
-if(loginType === "password"){
-  return (
-    <>
-      {showPasswordModal && (
-        <ModalPassword title="Entrar com a senha" onClose={handleModalClose}>
-          <p>Digite a senha para acessar o formulário:</p>
-          <div className="space-y-2 w-full">
-            <Label htmlFor="password">Senha</Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Insira a senha do formulário aqui"
-              className="w-full"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="mt-4 flex justify-end space-x-2">
-            <Button
-              className="bg-green-600"
-              onClick={handlePasswordSubmit}
-            >
-              Responder Formulário
-            </Button>
-          </div>
-        </ModalPassword>
-      )}
-    </>
-  );
-}
+            <div className="mt-4 flex justify-end space-x-2">
+              <Button
+                className="bg-green-600"
+                onClick={handlePasswordSubmit}
+              >
+                Responder Formulário
+              </Button>
+            </div>
+          </ModalPassword>
+        )}
+      </>
+    );
+  }
 
-if (loading) {
-  return <div>carregando</div> 
-}
+  if (loading) {
+    return <div>carregando</div>
+  }
 
 
   const renderQuestion = (question: Question) => {
@@ -260,7 +283,7 @@ if (loading) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                {...({className: "flex items-center space-x-2 rounded-lg border p-4 hover:bg-accent transition-colors"} as HTMLMotionProps<'div'>)}
+                {...({ className: "flex items-center space-x-2 rounded-lg border p-4 hover:bg-accent transition-colors" } as HTMLMotionProps<'div'>)}
               >
                 <RadioGroupItem value={option} id={option} />
                 <Label htmlFor={option} className="flex-1 cursor-pointer">
@@ -279,7 +302,7 @@ if (loading) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                {...({className: "flex items-center space-x-2 rounded-lg border p-4 hover:bg-accent transition-colors" } as HTMLMotionProps<'div'>)}
+                {...({ className: "flex items-center space-x-2 rounded-lg border p-4 hover:bg-accent transition-colors" } as HTMLMotionProps<'div'>)}
               >
                 <Checkbox
                   id={option}
@@ -322,7 +345,7 @@ if (loading) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        {...({className: "min-h-screen bg-background flex items-center justify-center p-4"} as HTMLMotionProps<'div'>)}
+        {...({ className: "min-h-screen bg-background flex items-center justify-center p-4" } as HTMLMotionProps<'div'>)}
       >
         <div className="text-center space-y-4">
           <h2 className="text-2xl font-bold">Obrigado por responder!</h2>
@@ -341,7 +364,7 @@ if (loading) {
 
   return (
     <>
-          <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-background flex flex-col">
         <Progress value={((currentQuestion + 1) / totalQuestions) * 100} className="w-full" />
 
         <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8 space-y-8">
@@ -352,7 +375,7 @@ if (loading) {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -100 }}
               transition={{ duration: 0.5 }}
-              {...({className: "w-full max-w-4xl space-y-8"} as HTMLMotionProps<'div'>)}
+              {...({ className: "w-full max-w-4xl space-y-8" } as HTMLMotionProps<'div'>)}
             >
               <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">
                 {question.title}
