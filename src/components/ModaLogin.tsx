@@ -20,11 +20,10 @@ export default function LoginModal() {
         try {
             const authData: AuthDTO = { email, password };
             await login(authData);
-            location.reload();
-
+            window.location.reload()
         } catch (error) {
             console.log("Erro ao fazer login " + error);
-            setMessage('Falha no login. Verifique suas credenciais.');
+            setMessage('Falha ao tentar fazer login. Verifique se sua senha ou email estão corretos');
         } finally {
             setIsLoading(false);
         }
