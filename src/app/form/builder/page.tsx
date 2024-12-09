@@ -108,6 +108,41 @@ export default function FormBuilder() {
     }
   }, []);
 
+  
+  useEffect(() => {
+    const importedQuestionsJson = localStorage.getItem('importedQuestions');
+    if (importedQuestionsJson) {
+      const importedQuestions = JSON.parse(importedQuestionsJson);
+  
+      // Mapeando para garantir que cada pergunta seja um "page" com apenas uma questão
+      const newPages = importedQuestions.map((q: any, index: number) => ({
+        id: index + 1,
+        elements: [{  // Alterado para "elements" no plural
+          id: Date.now() + Math.random(),
+          type: q.options.length > 0 ? 'radio' : 'text',
+          question: q.question,
+          options: q.options,
+          required: false,
+          description: '',
+        }]
+      }));
+  
+      setPages(newPages);
+      localStorage.setItem('formPages', JSON.stringify(newPages));
+    
+
+    } else {
+      const storedPages = localStorage.getItem('formPages');
+      if (storedPages) {
+        setPages(JSON.parse(storedPages));
+        
+      }
+    }
+  }, []);
+  
+
+  
+
   useEffect(() => {
     localStorage.setItem("formPages", JSON.stringify(pages));
     localStorage.setItem("activePage", activePage.toString());
