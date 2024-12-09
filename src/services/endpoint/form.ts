@@ -51,7 +51,6 @@ export const getPublicForm = async (idPublic: string, formHasLoginType: string, 
     });
     return response.data
   } catch (error) {
-      console.error('Erro ao pegar formulario')
       throw error;
   }
 }
