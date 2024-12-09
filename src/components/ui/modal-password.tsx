@@ -4,10 +4,9 @@ import { Button } from '@/components/ui/button';
 interface ModalProps {
   title: string;
   children: ReactNode;
-  onClose: () => void;
 }
 
-export const Modal: React.FC<ModalProps> = ({ title, children, onClose }) => {
+export const Modal: React.FC<ModalProps> = ({ title, children }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
       <div className="bg-gray-900 text-white rounded-lg shadow-xl w-11/12 max-w-md p-6">
