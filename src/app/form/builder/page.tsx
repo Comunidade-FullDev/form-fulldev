@@ -23,7 +23,6 @@ import { useRouter } from "next/navigation"
 import { FaSave } from "react-icons/fa"
 import { CreateForm, FormDTO } from "@/types/Form"
 
-
 interface FormElement {
   id: number;
   type: 'text' | 'textarea' | 'radio' | 'checkbox';
@@ -114,10 +113,9 @@ export default function FormBuilder() {
     if (importedQuestionsJson) {
       const importedQuestions = JSON.parse(importedQuestionsJson);
   
-      // Mapeando para garantir que cada pergunta seja um "page" com apenas uma questão
       const newPages = importedQuestions.map((q: any, index: number) => ({
         id: index + 1,
-        elements: [{  // Alterado para "elements" no plural
+        elements: [{ 
           id: Date.now() + Math.random(),
           type: q.options.length > 0 ? 'radio' : 'text',
           question: q.question,
