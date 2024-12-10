@@ -1,6 +1,25 @@
-import { CreateForm, FormWorkspace, AnswerDTO, FormDTO, FormPage, Form } from '@/types/Form';
+import { CreateForm, FormWorkspace, AnswerDTO, FormDTO, FormPage, Form, AnswerGraphDTO, FormGraph } from '@/types/Form';
 import api from '../apiForm';
 
+export const getFormAnswers = async (formId: string): Promise<AnswerGraphDTO[]> => {
+  try {
+    const response = await api.get<AnswerGraphDTO[]>(`/api/forms/${formId}/answers`);
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao buscar as respostas:', error);
+    throw error;
+  }
+}
+
+export const getFormByIdToGraph = async (id: string): Promise<FormGraph> => {
+  try {
+    const response = await api.get<FormGraph>(`/api/forms/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Erro ao buscar o formulário com ID ${id}:`, error);
+    throw error;
+  }
+};
 
 
 export const updateDefaultFormSettings = async (standard: string, password: string) => {
