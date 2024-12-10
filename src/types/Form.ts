@@ -118,6 +118,34 @@ export interface AnswerDTO {
   response: string;
 }
 
+export interface AnswerGraphDTO {
+  id: number; 
+  answeredBy: string | null;
+  answers: {
+    [questionId: number]: string | string[] | number;
+  };
+}
+
+export interface FormGraph{
+  id: string;
+  title: string;
+  description: string;
+  responsesCount: number;
+  createdAt: Date;
+  createdBy: string;
+  isPublished: boolean;
+  questions: Array<{
+    id: number;
+    title: string;
+    type: string;
+    questionDescription: string;
+    required: boolean;
+    placeholder: string;
+    options?: string[]; 
+    responses: AnswerGraphDTO[];
+  }>;
+}
+
 export interface FormElementProps {
   element: {
     id: number;
