@@ -49,6 +49,13 @@ export default function FormBuilder() {
   const [showPreview, setShowPreview] = useState(false)
   const [showStatistics, setShowStatistics] = useState(false)
   const [formData, setFormData] = useState<CreateForm | null>(null);
+  const [copiado, setCopiado] = useState(false);
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(formData?.link || "");
+    setCopiado(true);
+    setTimeout(() => setCopiado(false), 2000); 
+  };
 
   const fetchFormData = async (id: string) => {
     try {
@@ -138,9 +145,6 @@ export default function FormBuilder() {
     }
   }, []);
   
-
-  
-
   useEffect(() => {
     localStorage.setItem("formPages", JSON.stringify(pages));
     localStorage.setItem("activePage", activePage.toString());
@@ -396,8 +400,9 @@ export default function FormBuilder() {
                   <DialogTitle>Compartilhar Formulário</DialogTitle>
                 </DialogHeader>
                 <div className="flex items-center space-x-2">
-                  <Input defaultValue="" readOnly />
-                  <Button size="sm">Copiar</Button>
+                  <Input defaultValue={formData?.link || ""} readOnly />
+                  <Button size="sm" onClick={copyLink}>{copiado ? 'Copiado!' : 'Copiar'}
+                  </Button>
                 </div>
               </DialogContent>
             </Dialog>
