@@ -85,6 +85,7 @@ export interface CreateForm {
   idPublic: string
   title: string;
   description: string;
+  link: string;
   createdAt: Date;
   createdBy: string;
   isPublished: boolean;
