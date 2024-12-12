@@ -75,25 +75,20 @@ export default function StatisticsPage() {
     console.log('Selected Question:', selectedQuestion);
   }, [selectedQuestion]);
 
-
-
-
   const calculateCompletionRate = (responsesCount: number): number => {
     return responsesCount > 100 ? 85 : 70
   }
 
   const exportData = () => {
     const csvContent = [
-      ["Pergunta", "Opção", "Respostas", "Porcentagem"],
-      ...mockFormData.questions.flatMap((question: any) =>
-        question.options.map((option: string, index: number) => [
-          question.question,
-          option,
-          question.responses[index],
-          ((question.responses[index] / question.responses.reduce((a: number, b: number) => a + b, 0)) * 100).toFixed(2) + "%"
-        ])
-      )
-    ].map(e => e.join(",")).join("\n");
+      ["Pergunta", ...mockFormData.questions[0]?.responses?.map((_: any, index: number) => `Respondente ${index + 1}`)],
+      ...mockFormData.questions.map((question: any) => {
+        const responses = question.responses.map((response: string) => response || 'Nenhuma resposta');
+        return [question.question, ...responses];
+      })
+    ]
+      .map(e => e.join(","))
+      .join("\n");
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
@@ -180,7 +175,7 @@ export default function StatisticsPage() {
                 <ScrollArea className="h-[250px]">
                   {mockFormData.questions
                     .filter((question: { type: string }) => question.type === "radio" || question.type === "checkbox")
-                    .map((question: { id: Key | null | undefined; question: string }) => ( 
+                    .map((question: { id: Key | null | undefined; question: string }) => (
                       <div
                         key={question.id}
                         className={`p-3 cursor-pointer rounded transition-colors duration-200 ${selectedQuestion.id === question.id ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'}`}
@@ -195,6 +190,40 @@ export default function StatisticsPage() {
             </Card>
           </div>
         </TabsContent>
+
+        <TabsContent value="responses" className="space-y-6">
+          <ScrollArea className="w-full max-h-[calc(80vh-100px)] overflow-x-auto overflow-y-auto">
+            <div className="w-full min-w-[800px]">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-muted">
+                    <th className="text-left p-3 font-medium bg-muted w-[900px] top-0 sticky left-0 z-30">
+                      Perguntas
+                    </th>
+                    {mockFormData.questions[0]?.responses?.map((_: any, index: number) => (
+                      <th key={index} className="text-left p-2 sticky top-0 z-20 bg-muted font-medium whitespace-nowrap">
+                        Respondente {index + 1}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {mockFormData.questions.map((question: { id: React.Key | null | undefined; question: string | undefined; responses: any[] }) => (
+                    <tr key={question.id} className="border-b last:border-b-0">
+                      <td className="p-2 font-medium bg-background whitespace-normal w-[700px] sticky left-0 z-0">
+                        {question?.question || "Pergunta não especificada"}
+                      </td>
+                      {question.responses.map((response: string, index: number) => (
+                        <td key={index} className="p-2">{response || 'Nenhuma resposta'}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </ScrollArea>
+        </TabsContent>
+
       </Tabs>
 
       <div className="mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
@@ -205,27 +234,33 @@ export default function StatisticsPage() {
               Ver Todas as Respostas
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh]">
-            <DialogHeader>
+          <DialogContent className="w-[95vw] max-w-6xl max-h-[90vh] p-0">
+            <DialogHeader className="p-6 pb-0">
               <DialogTitle>Todas as Respostas</DialogTitle>
             </DialogHeader>
-            <ScrollArea className="h-[calc(90vh-100px)] mt-4">
-              <div className="overflow-x-auto">
-                <table className="w-full">
+            <ScrollArea className="h-[calc(80vh-100px)] w-full p-6">
+              <div className="w-full min-w-[800px]">
+                <table className="w-full border-collapse">
                   <thead>
                     <tr className="bg-muted">
-                      <th className="text-left p-3 font-medium">Respondente</th>
-                      {mockFormData.questions.map((question: { id: Key | null | undefined; question: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined }) => (
-                        <th key={question.id} className="text-left p-3 font-medium">{question.question}</th>
+                      <th className="text-left p-3 font-medium bg-muted w-[900px] top-0 sticky left-0 z-30">
+                        Perguntas
+                      </th>
+                      {mockFormData.questions[0]?.responses?.map((_: any, index: number) => (
+                        <th key={index} className="text-left p-2 sticky top-0 z-20 bg-muted font-medium whitespace-nowrap">
+                          Respondente {index + 1}
+                        </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {mockFormData.questions[0]?.responses?.map((_: any, index: number) => (
-                      <tr key={index} className="border-b last:border-b-0">
-                        <td className="p-3">Respondente {index + 1}</td>
-                        {mockFormData.questions.map((question: { id: Key | null | undefined; responses: any[] }) => (
-                          <td key={question.id} className="p-3">{question.responses[index] || 'Nenhuma resposta'}</td>
+                    {mockFormData.questions.map((question: { id: React.Key | null | undefined; question: string | undefined; responses: any[] }) => (
+                      <tr key={question.id} className="border-b last:border-b-0">
+                        <td className="p-2 font-medium bg-background whitespace-normal w-[700px] sticky left-0 z-0">
+                          {question?.question || "Pergunta não especificada"}
+                        </td>
+                        {question.responses.map((response: string, index: number) => (
+                          <td key={index} className="p-2">{response || 'Nenhuma resposta'}</td>
                         ))}
                       </tr>
                     ))}
