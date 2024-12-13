@@ -21,6 +21,8 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [emailSent, setEmailSent] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
 
 
   const handleCloseAlert = () => {
@@ -28,23 +30,33 @@ export default function Register() {
     setIsAlertOpen(false);
   };
 
+  setTimeout(() => {
+    setApiError("");
+  }, 8000);
+
   const handleRegisterWithEmail = async () => {
     if (passwordMismatch) {
       return;
     }
+
     setIsLoading(true);
-    setTimeout(async () => {
-      setIsLoading(false);
-      
-      try {
-        const authData: RegisterDTO = { email, password };
-        await register(authData);
-        setIsAlertOpen(true);
-      } catch (error) {
-        console.log("erro ao fazer login " + error)
+    setApiError(null); 
+
+    try {
+      const authData: RegisterDTO = { email, password };
+      await register(authData);
+      setIsAlertOpen(true);
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        setApiError(error.response.data);
+      } else {
+        setApiError("Ocorreu um erro ao registrar. Tente novamente.");
       }
-    }, 3000);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
 
   const handleLoginWithGoogle = async () => {
     redirectToGoogleAuth();
@@ -97,6 +109,9 @@ export default function Register() {
               )}
               <Input id="confirmPassword" type="password" placeholder="Confirme a sua senha" onChange={handlePasswordChange} className="w-full" />
             </div>
+            {apiError && (
+                <p className="text-red-500 text-sm text-center mt-2">{apiError}</p>
+              )}
             <Button className="w-full" onClick={handleRegisterWithEmail} disabled={isLoading}>
               {isLoading ? (
                 <Image src={spinnerloading} alt="Carregando" className="animate-spin h-5 w-5 mr-3" />

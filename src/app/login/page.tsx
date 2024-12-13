@@ -21,19 +21,22 @@ export default function LoginPage() {
 
 
 
+
   const handleLoginWithEmail = async () => {
     setIsLoading(true);
-      setTimeout(async () => {
-        setIsLoading(false);
         try {
           const authData: AuthDTO = { email, password };
           await login(authData);
           router.push("/workspace")
-        } catch (error) {
-          console.log("erro ao fazer login "+error)
-          setMessage('Falha no login. Verifique suas credenciais.');
+        } catch (error: any) {
+          if (error.response && error.response.data) {
+            setMessage(error.response.data);
+          } else {
+            setMessage("Ocorreu um erro ao tentar logar. Tente novamente.");
+          }
+        }finally {
+          setIsLoading(false);
         }
-      }, 2000);
   };
 
   const handleLoginWithGoogle = async () =>{
