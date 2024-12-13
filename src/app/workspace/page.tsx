@@ -47,12 +47,15 @@ export default function Workspace() {
   const loadForms = async () => {
     try {
       const fetchedForms = await getForms();
-      setForms(fetchedForms);
-      setFilteredForms(fetchedForms);
+      setForms(Array.isArray(fetchedForms) ? fetchedForms : []);
+      setFilteredForms(Array.isArray(fetchedForms) ? fetchedForms : []);
     } catch (error) {
       console.error('Erro ao carregar os formulários', error);
+      setForms([]);
+      setFilteredForms([]);
     }
   };
+  
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value;
     setSearchTerm(searchValue);
