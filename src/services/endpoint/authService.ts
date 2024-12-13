@@ -17,6 +17,30 @@ export interface LoginResponseDTO {
   token: string;
 }
 
+
+
+
+export const requestPasswordReset = async (email: string) => {
+  try {
+    const response = await api.post('/auth/reset-password', {email});
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao solicitar redefinição de senha:', error);
+    throw error;
+  }
+};
+
+export const confirmPasswordReset = async (token: string, password: string): Promise<string> => {
+  try {
+    const response = await api.post<string>('/auth/reset-password/confirm', { token, password });
+    return response.data;
+  } catch (error) {
+    console.error('Erro ao confirmar redefinição de senha:', error);
+    throw error;
+  }
+};
+
+
 export const login = async (authData: AuthDTO): Promise<String> => {
   try{
   const response = await api.post<LoginResponseDTO>('/auth/login', authData);
