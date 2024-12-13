@@ -19,7 +19,7 @@ export const getFormByIdToGraph = async (id: string): Promise<FormGraph> => {
     console.error(`Erro ao buscar o formulário com ID ${id}:`, error);
     throw error;
   }
-};
+}
 
 
 export const updateDefaultFormSettings = async (standard: string, password: string) => {
