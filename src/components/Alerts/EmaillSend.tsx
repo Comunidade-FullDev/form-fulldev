@@ -1,27 +1,27 @@
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { CheckCircle2 } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CheckCircle2 } from 'lucide-react';
 
 interface SuccessAlertProps {
-  isOpen: boolean
-  onClose: () => void
-  userEmail: string
+  isOpen: boolean;
+  onClose: () => void;
+  userEmail: string;
 }
 
 export const SuccessAlert: React.FC<SuccessAlertProps> = ({ isOpen, onClose, userEmail }) => {
-  const [isVisible, setIsVisible] = useState(isOpen)
+  const [isVisible, setIsVisible] = useState(isOpen);
 
   useEffect(() => {
     if (isOpen) {
-      setIsVisible(true)
+      setIsVisible(true);
       const timer = setTimeout(() => {
-        setIsVisible(false)
-        onClose()
-      }, 5000)
-      return () => clearTimeout(timer)
+        setIsVisible(false);
+        onClose();
+      }, 15000);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen, onClose])
+  }, [isOpen, onClose]);
 
   return (
     <AnimatePresence>
@@ -29,9 +29,9 @@ export const SuccessAlert: React.FC<SuccessAlertProps> = ({ isOpen, onClose, use
         <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -50 }}
-          transition={{ duration: 2.5 }}
-          className="fixed top-6 right-6 z-50 w-full max-w-sm"
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="fixed top-8 right-18 z-50 w-full max-w-sm"
         >
           <Alert
             variant="default"
@@ -54,5 +54,5 @@ export const SuccessAlert: React.FC<SuccessAlertProps> = ({ isOpen, onClose, use
         </motion.div>
       )}
     </AnimatePresence>
-  )
-}
+  );
+};
