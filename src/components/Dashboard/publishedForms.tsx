@@ -24,7 +24,7 @@ export default function PublishedForms() {
         setIsLoading(true);
         setError(null);
         const data = await getMyPublicsForms();
-        setForms(data);
+        setForms(data || []);
       } catch (err: any) {
         setError(err.message || 'Erro desconhecido');
       } finally {
@@ -35,9 +35,12 @@ export default function PublishedForms() {
     fetchForms();
   }, []);
 
-  const filteredForms = forms.filter((form) =>
-    form.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredForms = Array.isArray(forms)
+  ? forms.filter((form) =>
+      form.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  : [];
+
 
   return (
     <div className="space-y-4">
@@ -48,11 +51,16 @@ export default function PublishedForms() {
         className="max-w-sm"
       />
       <div className="rounded-md border">
-        {isLoading ? (
+      {isLoading ? (
+      
           <p>Carregando...</p>
         ) : error ? (
           <p className="text-red-500">{error}</p>
-        ) : (
+        ) : filteredForms.length === 0 && searchTerm !== "" ? (
+          <p className="p-4 text-center text-gray-500">Nenhum formulário publicado com o título "{searchTerm}" foi encontrado.</p>
+        ) :  forms.length === 0  || filteredForms.length === 0 ? ( 
+          <p className="p-4 text-center text-gray-500">Você ainda não publicou nenhum formulário.</p>
+        ) :(
           <Table>
             <TableHeader>
               <TableRow>
