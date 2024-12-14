@@ -17,7 +17,7 @@ interface FormElement {
   question: string;
   options: string[];
   required: boolean;
-  description: string;
+  questionDescription: string;
 }
 
 interface FormPage {
@@ -82,7 +82,7 @@ export function FormPreview({ pages }: FormPreviewProps) {
   const renderRadio = (element: FormElement) => (
     <RadioGroup
       value={answers[element.id] as string || ''}
-      onValueChange={(value) => handleAnswer(element.id, value)}
+      onValueChange={(value: string | string[]) => handleAnswer(element.id, value)}
     >
       {element.options.map((option, index) => (
         <div key={index} className="flex items-center space-x-2 mb-4">
@@ -109,7 +109,7 @@ export function FormPreview({ pages }: FormPreviewProps) {
           <Checkbox
             id={`preview-checkbox-${element.id}-${index}`}
             checked={(answers[element.id] as string[] || []).includes(option)}
-            onCheckedChange={(checked) => {
+            onCheckedChange={(checked: any) => {
               const currentAnswers = answers[element.id] as string[] || []
               const updatedAnswers = checked
                 ? [...currentAnswers, option]
@@ -166,9 +166,9 @@ export function FormPreview({ pages }: FormPreviewProps) {
                   <h2 className="text-2xl md:text-3xl font-bold mb-4">
                     {currentElement?.question}
                   </h2>
-                  {currentElement?.description && (
+                  {currentElement?.questionDescription && (
                     <p className="text-lg md:text-xl mb-8 text-muted-foreground">
-                      {currentElement.description}
+                      {currentElement.questionDescription}
                     </p>
                   )}
                   {currentElement && renderElement(currentElement)}

@@ -24,6 +24,10 @@ const generateFakeForms = (num: number): Form[] => {
       title: `Formulário ${i + 1}`,
       createdAt: new Date(2024, 11, 7 - (i % 30)),
       responsesCount: Math.floor(Math.random() * 100),
+      idPublic: '',
+      description: '',
+      questions: [],
+      link: ''
     });
   }
   return forms;

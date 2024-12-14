@@ -1,9 +1,8 @@
-'use client'
-import React from 'react'
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
+import React, { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,16 +11,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { updateDefaultFormSettings } from "@/services/endpoint/form";
+import { Label } from "../ui/label";
+import Modal from "../ui/modal-password";
 
 const formSchema = z.object({
   workspaceName: z.string().min(2, {
@@ -30,22 +32,70 @@ const formSchema = z.object({
   language: z.string(),
   emailNotifications: z.boolean(),
   defaultPrivacy: z.string(),
-})
+  password: z.string().optional(),
+});
 
 export default function Settings() {
+  const [isModalOpen, setModalOpen] = React.useState(false);
+  const [password, setPassword] = useState("");
+
+  const storedPrivacy = localStorage.getItem("defaultPrivacy") || "public";
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       workspaceName: "Meu Espaço de Trabalho",
       language: "pt-BR",
       emailNotifications: true,
-      defaultPrivacy: "private",
+      defaultPrivacy: storedPrivacy,
+      password: "",
     },
-  })
+  });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
-  }
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      const defaultPrivacy = value.defaultPrivacy || "";
+      localStorage.setItem("defaultPrivacy", defaultPrivacy);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [form]);
+
+  const handleModalClose = () => {
+    form.setValue("defaultPrivacy", "public");
+    form.setValue("password", "");
+    setModalOpen(false);
+  };
+
+  const handlePrivacyChange = (value: string) => {
+    if (value === "password") {
+      setModalOpen(true);
+    } else {
+      form.setValue("defaultPrivacy", value);
+      form.setValue("password", "");
+    }
+  };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+        const standard = form.watch("defaultPrivacy");
+        const sendEmail = form.watch("emailNotifications");
+        console.log(sendEmail)
+        const { password } = values;
+
+        console.log("Payload enviado:", { defaultPrivacy: standard, password, sendEmail });
+
+        await updateDefaultFormSettings(standard, password || "", sendEmail);
+        console.log("Configurações atualizadas com sucesso:", values);
+        alert("Configurações salvas com sucesso!");
+    } catch (error) {
+        console.error("Erro ao salvar configurações:", error);
+        alert("Erro ao salvar as configurações. Tente novamente.");
+    }
+};
+
 
   return (
     <Form {...form}>
@@ -103,10 +153,7 @@ export default function Settings() {
                 </FormDescription>
               </div>
               <FormControl>
-                <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
+                <Switch checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
             </FormItem>
           )}
@@ -117,7 +164,13 @@ export default function Settings() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Privacidade Padrão dos Formulários</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select
+                onValueChange={(value: string) => {
+                  handlePrivacyChange(value);
+                  field.onChange(value);
+                }}
+                value={form.watch("defaultPrivacy")}
+              >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Selecione a privacidade padrão" />
@@ -136,9 +189,40 @@ export default function Settings() {
             </FormItem>
           )}
         />
+
         <Button type="submit">Salvar Alterações</Button>
       </form>
-    </Form>
-  )
-}
+      {isModalOpen && (
+        <Modal title="Definir Senha">
+          <p>Digite a senha para proteger o formulário:</p>
+          
+          <div className="space-y-2 w-full">
 
+            <Label htmlFor="password">Senha</Label>
+            <Input
+              id="password"
+              type="password"
+              placeholder="Insira a senha do seu formulário aqui"
+              className="w-full text-white"
+              value={form.watch("password")}
+            onChange={(e) => form.setValue("password", e.target.value)}
+            />
+          </div>
+          <div className="mt-4 flex justify-end space-x-2">
+            <Button className="bg-green-600"
+              onClick={() => {
+                setModalOpen(false);
+              }}
+            >
+              Salvar
+            </Button>
+
+            <Button onClick={() => setModalOpen(false)} variant="outline" className="bg-red-600 hover:bg-red-900 text-white">
+            Cancelar
+          </Button>
+          </div>
+        </Modal>
+      )}
+    </Form>
+  );
+}

@@ -9,21 +9,9 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Trash2, GripVertical } from 'lucide-react'
 import { Switch } from "@/components/ui/switch"
+import { FormElementProps } from "@/types/Form"
 
-interface FormElementProps {
-  element: {
-    id: number;
-    type: 'text' | 'textarea' | 'radio' | 'checkbox'; 
-    question: string;
-    options: string[];
-    required: boolean;
-    description: string;
-  };
-  isActive: boolean;
-  onClick: () => void;
-  onUpdate: (updates: Partial<FormElementProps['element']>) => void;
-  onDelete: () => void;
-}
+
 
 export function FormElement({ element, isActive, onClick, onUpdate, onDelete }: FormElementProps) {
   const [isEditing, setIsEditing] = useState(false)
@@ -33,7 +21,7 @@ export function FormElement({ element, isActive, onClick, onUpdate, onDelete }: 
   }
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onUpdate({ description: e.target.value })
+    onUpdate({ questionDescription: e.target.value })
   }
 
   const handleOptionChange = (index: number, value: string) => {
@@ -93,7 +81,7 @@ export function FormElement({ element, isActive, onClick, onUpdate, onDelete }: 
         </div>
       </div>
       <Textarea
-        value={element.description}
+        value={element.questionDescription}
         onChange={handleDescriptionChange}
         placeholder="Adicione uma descrição (opcional)"
         className="mb-4 text-sm"

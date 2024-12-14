@@ -1,37 +1,46 @@
-'use client'
-import React from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Eye, Link2, Share2 } from 'lucide-react'
+'use client';
+import React, { useEffect, useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Eye, Link2, Share2 } from 'lucide-react';
+import { Form, FormWorkspace } from '@/types/Form';
+import { getMyPublicsForms } from '@/services/endpoint/form';
+import { FaFacebook, FaTwitter, FaWhatsapp } from 'react-icons/fa';
+import { CopyButton, ShareModal } from '../CopyAndShare';
 
-interface PublishedForm {
-  id: string
-  name: string
-  publishedAt: Date
-  views: number
-  url: string
-}
-
-const publishedForms: PublishedForm[] = [
-  { id: '1', name: 'Pesquisa de Satisfação', publishedAt: new Date('2024-03-01'), views: 150, url: 'https://forms.example.com/f/1' },
-  { id: '2', name: 'Inscrição para Evento', publishedAt: new Date('2024-03-05'), views: 300, url: 'https://forms.example.com/f/2' },
-  { id: '3', name: 'Feedback de Produto', publishedAt: new Date('2024-03-10'), views: 75, url: 'https://forms.example.com/f/3' },
-]
 
 export default function PublishedForms() {
-  const [searchTerm, setSearchTerm] = React.useState('')
+  const [searchTerm, setSearchTerm] = useState('');
+  const [forms, setForms] = useState<FormWorkspace[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-  const filteredForms = publishedForms.filter(form =>
-    form.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+
+  useEffect(() => {
+    const fetchForms = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const data = await getMyPublicsForms();
+        setForms(data || []);
+      } catch (err: any) {
+        setError(err.message || 'Erro desconhecido');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchForms();
+  }, []);
+
+  const filteredForms = Array.isArray(forms)
+  ? forms.filter((form) =>
+      form.title.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  : [];
+
 
   return (
     <div className="space-y-4">
@@ -42,45 +51,49 @@ export default function PublishedForms() {
         className="max-w-sm"
       />
       <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[300px]">Nome do Formulário</TableHead>
-              <TableHead>Data de Publicação</TableHead>
-              <TableHead>Visualizações</TableHead>
-              <TableHead className="text-right">Ações</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredForms.map((form) => (
-              <TableRow key={form.id}>
-                <TableCell className="font-medium">{form.name}</TableCell>
-                <TableCell>{form.publishedAt.toLocaleDateString('pt-BR')}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-1">
-                    <Eye className="h-4 w-4" />
-                    {form.views}
-                  </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => navigator.clipboard.writeText(form.url)}
-                  >
-                    <Link2 className="h-4 w-4" />
-                    <span className="sr-only">Copiar link</span>
-                  </Button>
-                  <Button variant="ghost" size="icon">
-                    <Share2 className="h-4 w-4" />
-                    <span className="sr-only">Compartilhar</span>
-                  </Button>
-                </TableCell>
+      {isLoading ? (
+      
+          <p>Carregando...</p>
+        ) : error ? (
+          <p className="text-red-500">{error}</p>
+        ) : filteredForms.length === 0 && searchTerm !== "" ? (
+          <p className="p-4 text-center text-gray-500">Nenhum formulário publicado com o título "{searchTerm}" foi encontrado.</p>
+        ) :  forms.length === 0  || filteredForms.length === 0 ? ( 
+          <p className="p-4 text-center text-gray-500">Você ainda não publicou nenhum formulário.</p>
+        ) :(
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[300px]">Nome do Formulário</TableHead>
+                <TableHead>Data de Publicação</TableHead>
+                <TableHead>Visualizações</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredForms.map((form) => (
+                <TableRow key={form.id} onClick={() => window.location.href = `/form/builder?id=${form.id}`}>
+                  <TableCell className="font-medium">{form.title}</TableCell>
+                  <TableCell>{new Date(form.createdAt).toLocaleDateString('pt-BR')}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-1">
+                      <Eye className="h-4 w-4" />
+                      {form.views}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+
+                      <CopyButton textToCopy={form.link} />
+
+                      <ShareModal link={form.link} />
+                      
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        )}
       </div>
     </div>
-  )
+  );
 }

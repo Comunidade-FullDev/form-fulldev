@@ -1,6 +1,7 @@
 'use client'
 import AOS from "aos";
 import "aos/dist/aos.css";
+import { useState } from "react";
 import AnimatedBackground from "@/components/Animate/BgAnimate";
 import { CarouselSlides } from "@/components/Animate/CarouselSlides";
 import { Contact } from "@/components/Sections_LP/Contact";
@@ -9,16 +10,34 @@ import { Differences } from "@/components/Sections_LP/Differences";
 import { Header } from "@/components/Sections_LP/Header";
 import { Hero } from "@/components/Sections_LP/Hero";
 import { useEffect } from "react";
+import TokenExpiredNotice from './../components/TokenExpired';
+import Cookies from "js-cookie";
+
+
 
 export default function Home(): JSX.Element {
+  const [showModal, setShowModal] = useState(false);
+
 
   useEffect(() => {
     AOS.init({
       duration: 1000,
-      easing: 'ease-in-out', 
-    })
-  }, [])
+      easing: 'ease-in-out',
+    });
 
+    const handleTokenExpired = () => {
+      setShowModal(true);
+    };
+
+    // Listener para detectar a expiração do token
+    window.addEventListener('tokenExpired', handleTokenExpired);
+
+    return () => {
+      // Limpa o listener quando o componente for desmontado
+      window.removeEventListener('tokenExpired', handleTokenExpired);
+    };
+  }, []);
+  
   return (
     <main className="relative h-screen w-full">
       <AnimatedBackground />
@@ -30,7 +49,9 @@ export default function Home(): JSX.Element {
           <CarouselSlides />
           <Contact />
           <Copyright />
-      </div>
+          <TokenExpiredNotice showModal={showModal} setShowModal={setShowModal} />
+
+        </div>
       </div>
     </main>
   );
