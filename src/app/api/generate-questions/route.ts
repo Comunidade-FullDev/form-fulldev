@@ -22,8 +22,8 @@ export async function POST(req: Request) {
 }
 
 const generateQuestions = async (topic: string, questionCount: number): Promise<Question[]> => {
-  const apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
-    const apiKey = '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';
+  const apiUrl = process.env.PUBLIC_API_GENERATE_QUESTIONS_URL  || ""
+    const apiKey = process.env.API_KEY_GENERATE_QUESTIONS
 
     const requestData = {
         model: 'llama3-70b-8192',

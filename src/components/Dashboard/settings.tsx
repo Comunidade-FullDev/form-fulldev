@@ -80,20 +80,22 @@ export default function Settings() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const standard = form.watch("defaultPrivacy");
-      const { password } = values;
-      console.log(password)
-      console.log(values.password)
-      console.log("Payload enviado:", { defaultPrivacy: standard, password });
+        const standard = form.watch("defaultPrivacy");
+        const sendEmail = form.watch("emailNotifications");
+        console.log(sendEmail)
+        const { password } = values;
 
-      await updateDefaultFormSettings(standard, values.password || "");
-      console.log("Configurações atualizadas com sucesso:", values);
-      alert("Configurações salvas com sucesso!");
+        console.log("Payload enviado:", { defaultPrivacy: standard, password, sendEmail });
+
+        await updateDefaultFormSettings(standard, password || "", sendEmail);
+        console.log("Configurações atualizadas com sucesso:", values);
+        alert("Configurações salvas com sucesso!");
     } catch (error) {
-      console.error("Erro ao salvar configurações:", error);
-      alert("Erro ao salvar as configurações. Tente novamente.");
+        console.error("Erro ao salvar configurações:", error);
+        alert("Erro ao salvar as configurações. Tente novamente.");
     }
-  };
+};
+
 
   return (
     <Form {...form}>

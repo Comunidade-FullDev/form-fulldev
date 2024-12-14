@@ -72,7 +72,7 @@ export default function PublishedForms() {
             </TableHeader>
             <TableBody>
               {filteredForms.map((form) => (
-                <TableRow key={form.id}>
+                <TableRow key={form.id} onClick={() => window.location.href = `/form/builder?id=${form.id}`}>
                   <TableCell className="font-medium">{form.title}</TableCell>
                   <TableCell>{new Date(form.createdAt).toLocaleDateString('pt-BR')}</TableCell>
                   <TableCell>
@@ -81,7 +81,7 @@ export default function PublishedForms() {
                       {form.views}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
 
                       <CopyButton textToCopy={form.link} />
 

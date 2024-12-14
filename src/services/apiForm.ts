@@ -3,12 +3,12 @@ import Cookies from "js-cookie";
 
 
 const api = axios.create({
-  baseURL: process.env.PUBLIC_API_FORM_URL || "http://ec2-18-226-164-76.us-east-2.compute.amazonaws.com:8080",
+  baseURL: process.env.PUBLIC_API_FORM_URL,
   headers: {
     'Content-Type': 'application/json',
   },
   withCredentials: true,
-});
+})
 
 api.interceptors.request.use((config) => {
   const authToken = Cookies.get("token");

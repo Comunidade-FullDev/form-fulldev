@@ -22,16 +22,17 @@ export const getFormByIdToGraph = async (id: string): Promise<FormGraph> => {
 }
 
 
-export const updateDefaultFormSettings = async (standard: string, password: string) => {
+export const updateDefaultFormSettings = async (standard: string, password: string, sendEmail: boolean) => {
   try {
-    console.log({standard, password})
-    const response = await api.patch(`/api/forms/default-settings/${standard}`, password );
-    return response.data;
+      const payload = { password, sendEmail };
+      console.log({ standard, ...payload });
+      const response = await api.patch(`/api/forms/default-settings/${standard}`, payload);
+      return response.data;
   } catch (error) {
-    console.error('Erro ao atualizar as configurações padrão dos formulários:', error);
-    throw error;
+      console.error("Erro ao atualizar as configurações padrão dos formulários:", error);
+      throw error;
   }
-};
+}
 
 export const getMyPublicsForms = async (): Promise<FormWorkspace[]> =>{
   try{
