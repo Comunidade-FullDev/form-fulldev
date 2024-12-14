@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { SetStateAction, useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -12,7 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { BarChart, ImportIcon as FileImport, Share2, Settings, Send, Plus, Eye, Undo2, Redo2, Menu, FileEdit, Save } from 'lucide-react'
+import { BarChart, ImportIcon as FileImport, Share2, Settings, Send, Plus, Eye, Undo2, Redo2, Menu, FileEdit, Save, CheckCircle2 } from 'lucide-react'
 import { FormElement } from "@/components/FormBuilder/form-element"
 import { FormPreview } from "@/components/FormBuilder/form-preview"
 import { PageManager } from "@/components/FormBuilder/page-manager"
@@ -22,6 +22,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation"
 import { FaSave } from "react-icons/fa"
 import { CreateForm, FormDTO } from "@/types/Form"
+import { AnimatePresence, motion } from "framer-motion"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 
 interface FormElement {
   id: number;
@@ -50,11 +52,19 @@ export default function FormBuilder() {
   const [showStatistics, setShowStatistics] = useState(false)
   const [formData, setFormData] = useState<CreateForm | null>(null);
   const [copiado, setCopiado] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
 
   const copyLink = () => {
     navigator.clipboard.writeText(formData?.link || "");
     setCopiado(true);
-    setTimeout(() => setCopiado(false), 2000); 
+    setTimeout(() => setCopiado(false), 2000);
+  }
+
+  const showAlertMessage = (message: SetStateAction<string>) => {
+    setAlertMessage(message);
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 3000);
   };
 
   const fetchFormData = async (id: string) => {
@@ -114,15 +124,15 @@ export default function FormBuilder() {
     }
   }, []);
 
-  
+
   useEffect(() => {
     const importedQuestionsJson = localStorage.getItem('importedQuestions');
     if (importedQuestionsJson) {
       const importedQuestions = JSON.parse(importedQuestionsJson);
-  
+
       const newPages = importedQuestions.map((q: any, index: number) => ({
         id: index + 1,
-        elements: [{ 
+        elements: [{
           id: Date.now() + Math.random(),
           type: q.options.length > 0 ? 'radio' : 'text',
           question: q.question,
@@ -131,20 +141,20 @@ export default function FormBuilder() {
           description: '',
         }]
       }));
-  
+
       setPages(newPages);
       localStorage.setItem('formPages', JSON.stringify(newPages));
-    
+
 
     } else {
       const storedPages = localStorage.getItem('formPages');
       if (storedPages) {
         setPages(JSON.parse(storedPages));
-        
+
       }
     }
   }, []);
-  
+
   useEffect(() => {
     localStorage.setItem("formPages", JSON.stringify(pages));
     localStorage.setItem("activePage", activePage.toString());
@@ -175,16 +185,16 @@ export default function FormBuilder() {
 
   const updateFormElement = (id: number, updates: Partial<FormElement>) => {
     console.log("Antes de atualizar:", pages);
-  
+
     const updatedPages = pages.map(page => ({
       ...page,
-      elements: page.elements.map(el => 
+      elements: page.elements.map(el =>
         el.id === id ? { ...el, ...updates } : el
       ),
     }));
-  
+
     console.log("Após atualizar:", updatedPages);
-  
+
     console.log("form atualizado:", updatedPages.map(page => ({
       ...page,
       elements: page.elements.map(el => ({
@@ -192,11 +202,11 @@ export default function FormBuilder() {
         required: el.required,
       })),
     })));
-  
+
     setPages(updatedPages);
     localStorage.setItem("formPages", JSON.stringify(updatedPages));
   };
-  
+
 
 
   const updateOptions = (elementId: number, newOptions: string[]) => {
@@ -263,7 +273,7 @@ export default function FormBuilder() {
     }
   };
 
-  
+
   const changeForm = async () => {
     if (formData) {
       const formDTO: FormDTO = {
@@ -271,7 +281,7 @@ export default function FormBuilder() {
         description: formDescription,
         questions: pages.flatMap(page =>
           page.elements.map(element => ({
-            
+
             title: element.question,
             type: element.type,
             questionDescription: element.questionDescription,
@@ -302,6 +312,7 @@ export default function FormBuilder() {
     if (formData) {
       try {
         await publishFormById(parseInt(formData.id, 10))
+        showAlertMessage("formulário publicado com sucesso")
       } catch (error) {
         console.error("Erro ao publicar o formulário:", error);
       }
@@ -323,6 +334,32 @@ export default function FormBuilder() {
   return (
     <div className="flex flex-col h-screen
        bg-background text-foreground">
+
+      {showAlert && (
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="fixed top-8 right-18 z-50 w-full max-w-sm"
+          >
+            <Alert
+              variant="default"
+              className="bg-green-50 border border-green-300 shadow-lg rounded-lg flex items-center gap-3 px-4 py-3"
+            >
+              <div className="flex items-center justify-center bg-green-100 text-green-600 rounded-full w-10 h-10">
+                <CheckCircle2 className="w-6 h-6" />
+              </div>
+              <div className="flex flex-col">
+                <AlertTitle className="text-green-800 font-semibold">
+                  {alertMessage}
+                </AlertTitle>
+              </div>
+            </Alert>
+          </motion.div>
+        </AnimatePresence>
+      )}
       <header className="border-b">
         <div className="flex h-14 items-center justify-between px-4">
           <div className="flex items-center space-x-4">
