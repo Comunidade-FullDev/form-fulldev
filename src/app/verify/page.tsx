@@ -1,39 +1,41 @@
-'use client';
-
+'use client'
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import logo from "./../../../public/LogoWhite.svg"
+import logo from "./../../../public/LogoWhite.svg";
 import { verifyUser } from "@/services/endpoint/authService";
 
 export default function EmailVerification() {
-    const params = new URLSearchParams(window.location.search);
   const [verificationStatus, setVerificationStatus] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(10);
+  const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
-  const token  = params.get("token");;
+
+  useEffect(() => {
+    // Verifique se está no cliente antes de acessar o window
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setToken(params.get("token")); // Obtém o token e o armazena no estado
+    }
+  }, []);
 
   useEffect(() => {
     if (!token) return;
 
-    try{
-        verifyUserEmail(token)
-        setVerificationStatus("success");
-    }catch(error){
-        setVerificationStatus("error");
-    }
-
-  }, [token]);
-
-  const verifyUserEmail = async (token: string) => {
+    const verifyUserEmail = async (token: string) => {
       try {
         await verifyUser(token);
+        setVerificationStatus("success");
       } catch (error) {
-        console.log("erro ao fazer login " + error)
+        console.error("Erro ao verificar o e-mail:", error);
+        setVerificationStatus("error");
       }
-  }
+    };
+
+    verifyUserEmail(token);
+  }, [token]);
 
   useEffect(() => {
     if (verificationStatus === "success") {
