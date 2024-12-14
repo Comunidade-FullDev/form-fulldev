@@ -8,19 +8,29 @@ import { requestPasswordReset } from "@/services/endpoint/authService";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import spinnerloading from "./../../../public/isloading.svg";
 
 export default function RecoverAccount() {
   const [emailSent, setEmailSent] = useState(false);
   const [email, setEmail] = useState("");
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
 
   const handleSendEmail = async () => {
     try {
+      setIsLoading(true)
       await requestPasswordReset(email);
       setEmailSent(true);
       setError('');
-    } catch (err) {
-      setError('Erro ao enviar e-mail. Verifique o endereço fornecido.');
+    } catch (err: any) {
+      if (err.response && err.response.data) {
+        setError(err.response.data);
+      } else {
+        setError('Erro ao enviar e-mail. Verifique o endereço fornecido.');
+      }
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -48,8 +58,14 @@ export default function RecoverAccount() {
                 onChange={(e) => setEmail(e.target.value)} className="w-full" />
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
+            
             <Button className="w-full" onClick={handleSendEmail}>
-              Enviar email de recuperação
+            {isLoading ? (
+                <Image src={spinnerloading} alt="Carregando" className="animate-spin h-5 w-5 mr-3" />
+              ) : (
+                "Enviar email de recuperação"
+              )}
+            
             </Button>
             <div className="text-center text-sm text-muted-foreground">
               Não recebeu o email?{" "}

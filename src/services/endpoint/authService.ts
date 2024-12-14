@@ -20,9 +20,9 @@ export interface LoginResponseDTO {
 
 
 
-export const requestPasswordReset = async (email: string) => {
+export const requestPasswordReset = async (email: string): Promise<string> => {
   try {
-    const response = await api.post('/auth/reset-password', {email});
+    const response = await api.post<string>('/auth/reset-password', {email});
     return response.data;
   } catch (error) {
     console.error('Erro ao solicitar redefinição de senha:', error);

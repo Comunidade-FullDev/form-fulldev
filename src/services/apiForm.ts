@@ -30,9 +30,13 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use((response) => {
   return response; 
 }, (error) => {
-  if (error.response && error.response.status === 401) {
+  if (error.response && error.response.status === 401 || error.response.status === 403) {
     console.warn("Token expirado ou inválido. Removendo token...");
     Cookies.remove("token"); 
+
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new Event('tokenExpired'));
+    }
   }
 
   return Promise.reject(error);

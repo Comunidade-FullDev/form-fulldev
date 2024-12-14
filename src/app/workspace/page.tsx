@@ -23,6 +23,9 @@ import Settings from '@/components/Dashboard/settings';
 import PublishedForms from '@/components/Dashboard/publishedForms';
 import { useRouter } from 'next/navigation';
 import { ShareModal } from '@/components/CopyAndShare';
+import spinnerloading from "./../../../public/isloading.svg";
+import Image from "next/image";
+
 
 export default function Workspace() {
   const [forms, setForms] = useState<Form[]>([]);
@@ -44,7 +47,7 @@ export default function Workspace() {
       setDeletingForm(null);
     } catch (error) {
       console.error('Erro ao deletar o formulário', error);
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -60,7 +63,7 @@ export default function Workspace() {
       console.error('Erro ao carregar os formulários', error);
       setForms([]);
       setFilteredForms([]);
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -116,10 +119,6 @@ export default function Workspace() {
                     onChange={handleSearch}
                   />
                   <div className="flex flex-wrap gap-2 w-max">
-                    <Button variant="outline" size="sm" className="flex-grow sm:flex-grow-0">
-                      <Import className="mr-2 h-4 w-4" />
-                      Importar forms
-                    </Button>
                     <Link href="/form/create">
                       <Button size="sm">
                         <Plus className="mr-2 h-4 w-4" />
@@ -130,71 +129,69 @@ export default function Workspace() {
                 </div>
               </div>
               <div className="overflow-x-auto">
-                {isLoading ? (
-                  <p>Carregando...</p>
-                ) : error ? (
-                  <p className="text-red-500">{error}</p>
-                ) : filteredForms.length === 0 && searchTerm !== "" ? (
-                  <p className="p-4 text-center text-gray-500">
-                    Nenhum formulário salvo com o título "{searchTerm}" foi encontrado.
-                  </p>
-                ) : forms.length === 0 || filteredForms.length === 0 ? (
-                  <p className="p-4 text-center text-gray-500">
-                    Você ainda não publicou nenhum formulário.
-                  </p>
-                ) : (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Seus forms</TableHead>
-                        <TableHead className="hidden sm:table-cell">Data de criação</TableHead>
-                        <TableHead>Respostas</TableHead>
-                        <TableHead className="text-right">Ações</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-
-                      {Array.isArray(filteredForms) && filteredForms.map((form) => (
-                        <TableRow key={form.id}>
-                          <TableCell>
-                            <Link href={`/form/builder?id=${form.id}`} passHref>
-                              {form.title}
-                            </Link>
-                          </TableCell>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Seus forms</TableHead>
+                      <TableHead className="hidden sm:table-cell">Data de criação</TableHead>
+                      <TableHead>Respostas</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {isLoading ? (
+                      <tr>
+                        <td colSpan={4}>
+                          <p className="p-4 text-start text-gray-500">Carregando...</p>
+                        </td>
+                      </tr>
+                    ) : error ? (
+                      <tr>
+                        <td colSpan={4}>
+                          <p className="text-red-500">{error}</p>
+                        </td>
+                      </tr>
+                    ) : filteredForms.length === 0 && searchTerm !== "" ? (
+                      <tr>
+                        <td colSpan={4}>
+                          <p className="p-4 text-start text-gray-500">
+                            Nenhum formulário salvo com o título "{searchTerm}" foi encontrado.
+                          </p>
+                        </td>
+                      </tr>
+                    ) : forms.length === 0 || filteredForms.length === 0 ? (
+                      <tr>
+                        <td colSpan={4}>
+                          <p className="p-4 text-start text-gray-500">
+                            Você ainda não criou nenhum formulário.
+                          </p>
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredForms.map((form) => (
+                        <TableRow key={form.id} onClick={() => window.location.href = `/form/builder?id=${form.id}`}>
+                          <TableCell>{form.title}</TableCell>
                           <TableCell className="hidden sm:table-cell">
-                            <Link href={`/form/builder?id=${form.id}`} passHref>
-                              {new Date(form.createdAt).toLocaleDateString('pt-BR')}
-                            </Link>
+                            {new Date(form.createdAt).toLocaleDateString('pt-BR')}
                           </TableCell>
+                          <TableCell>{form.responsesCount} respostas</TableCell>
                           <TableCell>
-                            <Link href={`/form/builder?id=${form.id}`} passHref>
-                              {form.responsesCount} respostas
-                            </Link>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setEditingForm(form)}
-                              >
+                            <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                              <Button variant="ghost" size="icon" onClick={() => setEditingForm(form)}>
                                 <FileEdit className="h-4 w-4" />
                               </Button>
                               <ShareModal link={form.link} />
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => setDeletingForm(form)}
-                              >
+                              <Button variant="ghost" size="icon" onClick={() => setDeletingForm(form)}>
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
                           </TableCell>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                 )}
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+
               </div>
             </TabsContent>
             <TabsContent value="publicados">

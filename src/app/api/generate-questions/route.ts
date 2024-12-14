@@ -10,6 +10,7 @@ interface Question {
 
 export async function POST(req: Request) {
     try {
+      console.log("entrou na chamada")
         const { topic, questionCount } = await req.json();
 
         const questions = await generateQuestions(topic, questionCount);
@@ -31,7 +32,7 @@ const generateQuestions = async (topic: string, questionCount: number): Promise<
                 role: 'user',
                 content: `Gere ${questionCount} questões para o tópico em portugues: ${topic}. Algumas questões devem ser de múltipla escolha e outras de resposta aberta. Quando for de múltipla escolha,
                  forneça as alternativas de forma clara e separada, para que elas sejam agrupadas na mesma questão. Traga as questões direto sem dizer mais nada, vá direto para elas.
-                 as questoes devem ser voltadas para o topico digitado. Se no texto houver solicitando tal tipo de questão, você deve apenas seguir o que ele falou sem exaatmente falar o que ele solicitou 
+                 as questoes devem ser voltadas para o topico digitado. Se no texto houver solicitando tal tipo de questão, você deve apenas seguir o que ele falou sem exatamente falar o que ele solicitou 
                  GERAR EM PORTUGUES, JAMAIS GERAR EM INGLES`
             }
         ]
@@ -46,11 +47,15 @@ const generateQuestions = async (topic: string, questionCount: number): Promise<
         body: JSON.stringify(requestData),
     });
 
+    console.log(response)
+
     if (!response.ok) {
         throw new Error('Erro ao buscar dados da API Groq');
     }
 
     const data = await response.json();
+
+    console.log(data)
 
     if (!data.choices || data.choices.length === 0 || !data.choices[0].message.content) {
       throw new Error('Nenhuma pergunta gerada pela API');
@@ -94,11 +99,11 @@ const generateQuestions = async (topic: string, questionCount: number): Promise<
   };
   
   function identifyLineType(line: string): 'question' | 'option' | 'other' {
-    if (/^\d+\.\s/.test(line)) {
-      return 'question';
-    } else if (/^[A-D]\)\s/.test(line)) { 
-      return 'option';
+    if (/^\d+\.\s/.test(line)) { 
+        return 'question';
+    } else if (/^[A-Da-d]\)\s/.test(line)) { 
+        return 'option';
     } else {
-      return 'other';
+        return 'other';
     }
-  }
+}

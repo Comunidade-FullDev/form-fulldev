@@ -124,10 +124,10 @@ export default function CreateForm() {
                 <div className="mb-4 rounded-full bg-primary/10 p-4">
                   <Download className="h-6 w-6 text-primary" />
                 </div>
-                <h2 className="mb-2 text-base font-semibold md:text-lg">Importar dados</h2>
+                <h2 className="mb-2 text-base font-semibold md:text-lg">Importar perguntas com I.A</h2>
                 <p className="text-xs text-muted-foreground md:text-sm">
-                  Copie ou importe dados já existentes das<br />
-                  suas questões
+                  escolha um tema e peça para a I.A<br />
+                  gerar suas questões
                 </p>
               </Button>
             </CardContent>
@@ -149,7 +149,7 @@ export default function CreateForm() {
           {!isLoading ? (
             <>
               <DialogHeader>
-                <DialogTitle>Importar dados</DialogTitle>
+                <DialogTitle>Importar perguntas</DialogTitle>
                 <DialogDescription>
                   Insira o tópico e o número de questões que você deseja gerar.
                 </DialogDescription>
@@ -161,7 +161,7 @@ export default function CreateForm() {
                     <Input
                       id="topic"
                       name="topic"
-                      placeholder="Ex: História do Brasil"
+                      placeholder="Ex: principais perguntas em uma entrevista de emprego"
                       required
                     />
                   </div>

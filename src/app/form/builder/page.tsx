@@ -267,6 +267,7 @@ export default function FormBuilder() {
   const saveForm = async () => {
     try {
       await createForm(pages, formTitle, formDescription);
+      showAlertMessage("Formulário salvo com sucesso.")
       router.push("../workspace")
     } catch (error) {
       console.error("Erro ao salvar o formulário:", error);
@@ -293,12 +294,9 @@ export default function FormBuilder() {
           }))
         ),
       };
-
-      console.log("Form DTO enviado para a API:", formDTO);
-
-
       try {
         await updateForm(parseInt(formData.id, 10), formDTO);
+        showAlertMessage("Formulário atualizado com sucesso.")
 
         router.push("../workspace");
       } catch (error) {
@@ -313,6 +311,7 @@ export default function FormBuilder() {
       try {
         await publishFormById(parseInt(formData.id, 10))
         showAlertMessage("formulário publicado com sucesso")
+        router.push("../workspace");
       } catch (error) {
         console.error("Erro ao publicar o formulário:", error);
       }
@@ -437,25 +436,10 @@ export default function FormBuilder() {
                   <DialogTitle>Compartilhar Formulário</DialogTitle>
                 </DialogHeader>
                 <div className="flex items-center space-x-2">
-                  <Input defaultValue={formData?.link || ""} readOnly />
+                  <Input defaultValue={formData?.link || "publique o formulário para que um link seja gerado"} readOnly />
                   <Button size="sm" onClick={copyLink}>{copiado ? 'Copiado!' : 'Copiar'}
                   </Button>
                 </div>
-              </DialogContent>
-            </Dialog>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <FileImport className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">Importar dados</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Importar Dados</DialogTitle>
-                </DialogHeader>
-                <Input type="file" />
-                <Button>Importar</Button>
               </DialogContent>
             </Dialog>
             <Dialog
@@ -490,10 +474,6 @@ export default function FormBuilder() {
                 <Button className="bg-primary hover:bg-primary/90" onClick={saveForm}>
                   <FaSave className="mr-2 h-4 w-4" />
                   <span className="hidden sm:inline">Salvar</span>
-                </Button>
-                <Button className="bg-primary hover:bg-primary/90" onClick={publishForm}>
-                  <Send className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">Publicar</span>
                 </Button>
               </>
             )}
