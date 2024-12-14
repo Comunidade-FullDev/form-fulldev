@@ -25,37 +25,46 @@ import { useRouter } from 'next/navigation';
 import { ShareModal } from '@/components/CopyAndShare';
 
 export default function Workspace() {
-  const router = useRouter();
-
   const [forms, setForms] = useState<Form[]>([]);
   const [filteredForms, setFilteredForms] = useState<Form[]>([]);
   const [editingForm, setEditingForm] = useState<Form | null>(null);
   const [deletingForm, setDeletingForm] = useState<Form | null>(null);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+
 
   const handleDelete = async (id: string) => {
     try {
+      setIsLoading(true)
       const deleteForms = await deleteForm(parseInt(id, 10));
       setForms((prev) => prev.filter((form) => form.id !== id));
       setFilteredForms((prev) => prev.filter((form) => form.id !== id));
       setDeletingForm(null);
     } catch (error) {
       console.error('Erro ao deletar o formulário', error);
+    }finally {
+      setIsLoading(false);
     }
   };
 
   const loadForms = async () => {
     try {
+      setIsLoading(true)
       const fetchedForms = await getForms();
-      setForms(Array.isArray(fetchedForms) ? fetchedForms : []);
+      console.log(fetchedForms)
+      setForms(fetchedForms);
       setFilteredForms(Array.isArray(fetchedForms) ? fetchedForms : []);
     } catch (error) {
       console.error('Erro ao carregar os formulários', error);
       setForms([]);
       setFilteredForms([]);
+    }finally {
+      setIsLoading(false);
     }
   };
-  
+
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = event.target.value;
     setSearchTerm(searchValue);
@@ -64,6 +73,7 @@ export default function Workspace() {
     );
     setFilteredForms(filtered);
   };
+
 
   useEffect(() => {
     loadForms();
@@ -120,56 +130,71 @@ export default function Workspace() {
                 </div>
               </div>
               <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Seus forms</TableHead>
-                      <TableHead className="hidden sm:table-cell">Data de criação</TableHead>
-                      <TableHead>Respostas</TableHead>
-                      <TableHead className="text-right">Ações</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredForms.map((form) => (
-                      <TableRow key={form.id}>
-                        <TableCell>
-                          <Link href={`/form/builder?id=${form.id}`} passHref>
-                            {form.title}
-                          </Link>
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell">
-                          <Link href={`/form/builder?id=${form.id}`} passHref>
-                            {new Date(form.createdAt).toLocaleDateString('pt-BR')}
-                          </Link>
-                        </TableCell>
-                        <TableCell>
-                          <Link href={`/form/builder?id=${form.id}`} passHref>
-                            {form.responsesCount} respostas
-                          </Link>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setEditingForm(form)}
-                            >
-                              <FileEdit className="h-4 w-4" />
-                            </Button>
-                            <ShareModal link={form.link} />
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setDeletingForm(form)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                {isLoading ? (
+                  <p>Carregando...</p>
+                ) : error ? (
+                  <p className="text-red-500">{error}</p>
+                ) : filteredForms.length === 0 && searchTerm !== "" ? (
+                  <p className="p-4 text-center text-gray-500">
+                    Nenhum formulário salvo com o título "{searchTerm}" foi encontrado.
+                  </p>
+                ) : forms.length === 0 || filteredForms.length === 0 ? (
+                  <p className="p-4 text-center text-gray-500">
+                    Você ainda não publicou nenhum formulário.
+                  </p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Seus forms</TableHead>
+                        <TableHead className="hidden sm:table-cell">Data de criação</TableHead>
+                        <TableHead>Respostas</TableHead>
+                        <TableHead className="text-right">Ações</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+
+                      {Array.isArray(filteredForms) && filteredForms.map((form) => (
+                        <TableRow key={form.id}>
+                          <TableCell>
+                            <Link href={`/form/builder?id=${form.id}`} passHref>
+                              {form.title}
+                            </Link>
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                            <Link href={`/form/builder?id=${form.id}`} passHref>
+                              {new Date(form.createdAt).toLocaleDateString('pt-BR')}
+                            </Link>
+                          </TableCell>
+                          <TableCell>
+                            <Link href={`/form/builder?id=${form.id}`} passHref>
+                              {form.responsesCount} respostas
+                            </Link>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setEditingForm(form)}
+                              >
+                                <FileEdit className="h-4 w-4" />
+                              </Button>
+                              <ShareModal link={form.link} />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setDeletingForm(form)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                 )}
               </div>
             </TabsContent>
             <TabsContent value="publicados">
