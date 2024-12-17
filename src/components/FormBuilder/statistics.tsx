@@ -192,22 +192,22 @@ export default function StatisticsPage() {
         </TabsContent>
 
         <TabsContent value="responses" className="space-y-6">
-          <ScrollArea className="w-full max-h-[calc(80vh-100px)] overflow-x-auto overflow-y-auto">
-            <div className="w-full min-w-[800px]">
-              <table className="w-full border-collapse">
-                <thead>
-                  <tr className="bg-muted">
-                    <th className="text-left p-3 font-medium bg-muted w-[900px] top-0 sticky left-0 z-30">
-                      Perguntas
+          <div className="w-full">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-muted">
+                  <th className="text-left p-3 font-medium bg-muted w-[900px] top-0 sticky left-0 z-30">
+                    Perguntas
+                  </th>
+                  {mockFormData.questions[0]?.responses?.map((_: any, index: number) => (
+                    <th key={index} className="text-left p-2 sticky top-0 z-20 bg-muted font-medium whitespace-nowrap">
+                      Respondente {index + 1}
                     </th>
-                    {mockFormData.questions[0]?.responses?.map((_: any, index: number) => (
-                      <th key={index} className="text-left p-2 sticky top-0 z-20 bg-muted font-medium whitespace-nowrap">
-                        Respondente {index + 1}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <ScrollArea className="w-full max-h-[calc(80vh-100px)] overflow-x-auto overflow-y-auto">
                   {mockFormData.questions.map((question: { id: React.Key | null | undefined; question: string | undefined; responses: any[] }) => (
                     <tr key={question.id} className="border-b last:border-b-0">
                       <td className="p-2 font-medium bg-background whitespace-normal w-[700px] sticky left-0 z-0">
@@ -218,10 +218,10 @@ export default function StatisticsPage() {
                       ))}
                     </tr>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </ScrollArea>
+                </ScrollArea>
+              </tbody>
+            </table>
+          </div>
         </TabsContent>
 
       </Tabs>
