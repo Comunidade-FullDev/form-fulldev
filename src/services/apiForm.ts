@@ -10,7 +10,6 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  console.log("valores: "+process.env.NEXT_PUBLIC_API_FORM_URL)
   const authToken = Cookies.get("token");
 
   if (!config.headers) {
