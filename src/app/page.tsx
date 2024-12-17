@@ -29,11 +29,9 @@ export default function Home(): JSX.Element {
       setShowModal(true);
     };
 
-    // Listener para detectar a expiração do token
     window.addEventListener('tokenExpired', handleTokenExpired);
 
     return () => {
-      // Limpa o listener quando o componente for desmontado
       window.removeEventListener('tokenExpired', handleTokenExpired);
     };
   }, []);

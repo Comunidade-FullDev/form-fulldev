@@ -24,8 +24,10 @@ export function Hero() {
                     <a href="/login" data-aos="fade-up" data-aos-delay="200"><Button>Comece agora <FaGlobe /></Button></a>
                 </div>
                 <div className="mt-10">
-                    <Image src="/ImgHero.svg" width={800} height={400} priority alt="" className="animate-float" />
-                </div>
+                <Image src="/imagehero.svg" width={800} 
+                      quality={100} 
+
+                    height={400} priority alt="" className="animate-float" />                </div>
             </div>
             <div className="mt-40 mb-16 flex justify-center items-center" data-aos="zoom-out">
                 <Image src="/ProgressBarImage.png" width={800} height={200} alt="" />
