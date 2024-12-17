@@ -61,7 +61,7 @@ export default function CreateForm() {
 
       localStorage.setItem('importedQuestions', JSON.stringify(data));
       await simulateLoading();
-      
+
       router.push('/form/builder');
     } catch (error) {
       console.error('Error generating questions:', error);
@@ -145,7 +145,7 @@ export default function CreateForm() {
         </div>
       </div>
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="w-max p-6">
+        <DialogContent className="w-full max-w-lg p-4 sm:p-6">
           {!isLoading ? (
             <>
               <DialogHeader>
@@ -163,6 +163,7 @@ export default function CreateForm() {
                       name="topic"
                       placeholder="Ex: principais perguntas em uma entrevista de emprego"
                       required
+                      className="w-full"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -175,44 +176,43 @@ export default function CreateForm() {
                       required
                       min="1"
                       max="50"
+                      className="w-full"
                     />
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button type="submit">Gerar questões</Button>
+                  <Button type="submit" className="w-full sm:w-auto">
+                    Gerar questões
+                  </Button>
                 </DialogFooter>
               </form>
             </>
           ) : (
-            <div className="flex flex-col items-center justify-center space-y-6 p-6">
+            <div className="flex flex-col items-center justify-center space-y-6 p-4 sm:p-6">
               <div className="relative">
                 <div className="absolute inset-0 bg-blue-500/20 rounded-full animate-ping"></div>
-                <Zap 
-                  className="h-24 w-24 text-yellow-500 animate-pulse z-10 relative" 
-                  strokeWidth={1.5} 
+                <Zap
+                  className="h-16 w-16 sm:h-24 sm:w-24 text-yellow-500 animate-pulse z-10 relative"
+                  strokeWidth={1.5}
                   fill="currentColor"
                 />
-              
               </div>
-              
               <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full">
                 <Zap className="h-5 w-5 text-yellow-500 animate-pulse" />
-                <span className="text-sm font-medium animate-pulse">
+                <span className="text-sm font-medium animate-pulse text-center">
                   Gerando questões na velocidade da luz! 🌟
                 </span>
                 <Loader2 className="h-4 w-4 animate-spin text-primary" />
               </div>
-
               <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div 
-                  className="bg-blue-600 h-2.5 rounded-full animate-pulse" 
-                  style={{width: '75%'}}
+                <div
+                  className="bg-blue-600 h-2.5 rounded-full animate-pulse"
+                  style={{ width: "75%" }}
                 ></div>
               </div>
-
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span className="text-sm">
+                <span className="text-sm text-center">
                   Preparando conteúdo inteligente em alta velocidade...
                 </span>
               </div>
