@@ -11,6 +11,7 @@ import Link from "next/link";
 import { register, RegisterDTO } from "../../services/endpoint/authService";
 import { redirectToFacebookAuth, redirectToGoogleAuth } from "../../services/endpoint/otherAuthService";
 import spinnerloading from "./../../../public/isloading.svg";
+import { Eye, EyeOff } from "lucide-react";
 
 
 export default function Register() {
@@ -21,7 +22,9 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [emailSent, setEmailSent] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [apiError, setApiError] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null)
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+
 
 
 
@@ -40,7 +43,7 @@ export default function Register() {
     }
 
     setIsLoading(true);
-    setApiError(null); 
+    setApiError(null);
 
     try {
       const authData: RegisterDTO = { email, password };
@@ -67,14 +70,18 @@ export default function Register() {
   };
   const handlePasswordChange = (e: { target: { id: any; value: any; }; }) => {
     const { id, value } = e.target;
-  
+
     if (id === "password") setPassword(value);
     if (id === "confirmPassword") setConfirmPassword(value);
     if (id === "password" || id === "confirmPassword") {
       setPasswordMismatch(value && (id === "password" ? value !== confirmPassword : password !== value));
     }
+  }
+
+  const alternarVisibilidadeSenha = () => {
+    setMostrarSenha(!mostrarSenha);
   };
-  
+
   return (
 
     <div className="min-h-screen w-full dark flex">
@@ -100,18 +107,47 @@ export default function Register() {
             </div>
             <div className="space-y-2 w-full">
               <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" placeholder="Digite uma senha" onChange={handlePasswordChange} className="w-full" />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={mostrarSenha ? "text" : "password"}
+                  placeholder="Insira sua senha"
+                  className="w-full pr-10"
+                  onChange={handlePasswordChange}
+                />
+                <button
+                  type="button"
+                  onClick={alternarVisibilidadeSenha}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600"
+                >
+                  {mostrarSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
             </div>
             <div className="space-y-2 w-full">
               <Label htmlFor="confirmPassword">Confirme a senha</Label>
               {passwordMismatch && (
                 <p className="text-red-500 text-sm mt-2">As senhas estão diferentes.</p>
               )}
-              <Input id="confirmPassword" type="password" placeholder="Confirme a sua senha" onChange={handlePasswordChange} className="w-full" />
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  type={mostrarSenha ? "text" : "password"}
+                  placeholder="Confirme a sua senha"
+                  onChange={handlePasswordChange}
+                  className="w-full" />
+                <button
+                  type="button"
+                  onClick={alternarVisibilidadeSenha}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600"
+                >
+                  {mostrarSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
             </div>
             {apiError && (
-                <p className="text-red-500 text-sm text-center mt-2">{apiError}</p>
-              )}
+              <p className="text-red-500 text-sm text-center mt-2">{apiError}</p>
+            )}
             <Button className="w-full" onClick={handleRegisterWithEmail} disabled={isLoading}>
               {isLoading ? (
                 <Image src={spinnerloading} alt="Carregando" className="animate-spin h-5 w-5 mr-3" />
