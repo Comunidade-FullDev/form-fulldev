@@ -11,6 +11,7 @@ import spinnerloading from "./../../../public/isloading.svg";
 import { login, AuthDTO } from "../../services/endpoint/authService";
 import { redirectToFacebookAuth, redirectToGoogleAuth } from "../../services/endpoint/otherAuthService";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,39 +19,44 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
 
 
 
   const handleLoginWithEmail = async () => {
     setIsLoading(true);
-        try {
-          const authData: AuthDTO = { email, password };
-          await login(authData);
-          router.push("/workspace")
-        } catch (error: any) {
-          if (error.response && error.response.data) {
-            setMessage(error.response.data);
-          } else {
-            setMessage("Ocorreu um erro ao tentar logar. Tente novamente.");
-          }
-        }finally {
-          setIsLoading(false);
-        }
+    try {
+      const authData: AuthDTO = { email, password };
+      await login(authData);
+      router.push("/workspace")
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        setMessage(error.response.data);
+      } else {
+        setMessage("Ocorreu um erro ao tentar logar. Tente novamente.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleLoginWithGoogle = async () =>{
+  const alternarVisibilidadeSenha = () => {
+    setMostrarSenha(!mostrarSenha);
+  };
+
+  const handleLoginWithGoogle = async () => {
     redirectToGoogleAuth();
   };
 
-  const handleLoginWithFacebook = async () =>{
+  const handleLoginWithFacebook = async () => {
     redirectToFacebookAuth();
   };
 
   return (
     <div className="min-h-screen w-full flex dark flex-col lg:flex-row">
       <div className="lg:w-1/2 bg-primary items-center justify-center p-8 hidden lg:flex">
-      <Image alt="Logo FullDev" src="/LogoWhite.svg" width={340} height={340} />
+        <Image alt="Logo FullDev" src="/LogoWhite.svg" width={340} height={340} />
       </div>
 
       <div className="flex-1 flex items-center justify-center p-4 lg:p-8">
@@ -68,7 +74,22 @@ export default function LoginPage() {
             </div>
             <div className="space-y-2 w-full">
               <Label htmlFor="password">Senha</Label>
-              <Input id="password" type="password" placeholder="Insira sua senha" className="w-full" onChange={(e) => setPassword(e.target.value)} />
+              <div className="relative">
+
+                <Input
+                  id="password"
+                  type={mostrarSenha ? "text" : "password"}
+                  placeholder="Insira sua senha"
+                  className="w-full" onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={alternarVisibilidadeSenha}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-600"
+                >
+                  {mostrarSenha ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
