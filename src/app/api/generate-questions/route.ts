@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 }
 
 const generateQuestions = async (topic: string, questionCount: number): Promise<Question[]> => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_GENERATE_QUESTIONS_URL  || ""
+  const apiUrl = process.env.NEXT_PUBLIC_API_GENERATE_QUESTIONS_URL || ""
     const apiKey = process.env.NEXT_API_KEY_GENERATE_QUESTIONS
 
     const requestData = {
