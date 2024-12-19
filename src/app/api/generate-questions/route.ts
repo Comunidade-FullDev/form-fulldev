@@ -55,8 +55,6 @@ const generateQuestions = async (topic: string, questionCount: number): Promise<
 
     const data = await response.json();
 
-    console.log(data)
-
     if (!data.choices || data.choices.length === 0 || !data.choices[0].message.content) {
       throw new Error('Nenhuma pergunta gerada pela API');
   }
@@ -87,6 +85,8 @@ const generateQuestions = async (topic: string, questionCount: number): Promise<
             break;
         }
       });
+
+      console.log(questions)
   
       if (currentQuestion) {
         questions.push(currentQuestion);
