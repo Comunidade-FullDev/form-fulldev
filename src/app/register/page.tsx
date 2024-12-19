@@ -12,6 +12,8 @@ import { register, RegisterDTO } from "../../services/endpoint/authService";
 import { redirectToFacebookAuth, redirectToGoogleAuth } from "../../services/endpoint/otherAuthService";
 import spinnerloading from "./../../../public/isloading.svg";
 import { Eye, EyeOff } from "lucide-react";
+import Cookies from "js-cookie";
+
 
 
 export default function Register() {
@@ -47,6 +49,7 @@ export default function Register() {
 
     try {
       const authData: RegisterDTO = { email, password };
+      Cookies.remove("token")
       await register(authData);
       setIsAlertOpen(true);
     } catch (error: any) {
