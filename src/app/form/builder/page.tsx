@@ -79,10 +79,20 @@ export default function FormBuilder() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const formId = params.get("id");
+    const importedQuestions = localStorage.getItem('importedQuestions');;
     console.log(formId)
 
-    if (window.location.pathname === "/form/builder" && formId) {
+    if (formId) {
       fetchFormData(formId);
+    }else if(importedQuestions){
+      console.log("pegou as importadas")
+      localStorage.removeItem("formPages")
+    }
+    
+    if(!formId && !importedQuestions){
+      console.log("entrou aqui")
+      localStorage.removeItem("formPages")
+      localStorage.removeItem("importedQuestions")
     }
   }, []);
 
@@ -144,8 +154,6 @@ export default function FormBuilder() {
 
       setPages(newPages);
       localStorage.setItem('formPages', JSON.stringify(newPages));
-
-
     } else {
       const storedPages = localStorage.getItem('formPages');
       if (storedPages) {
@@ -153,9 +161,12 @@ export default function FormBuilder() {
 
       }
     }
+    localStorage.removeItem("importedQuestions")
+
   }, []);
 
   useEffect(() => {
+    
     localStorage.setItem("formPages", JSON.stringify(pages));
     localStorage.setItem("activePage", activePage.toString());
     console.log("Páginas salvas no localStorage", pages);
