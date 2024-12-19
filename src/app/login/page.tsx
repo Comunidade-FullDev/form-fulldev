@@ -12,6 +12,7 @@ import { login, AuthDTO } from "../../services/endpoint/authService";
 import { redirectToFacebookAuth, redirectToGoogleAuth } from "../../services/endpoint/otherAuthService";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
+import Cookies from "js-cookie";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -28,6 +29,7 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const authData: AuthDTO = { email, password };
+      Cookies.remove("token")
       await login(authData);
       router.push("/workspace")
     } catch (error: any) {
