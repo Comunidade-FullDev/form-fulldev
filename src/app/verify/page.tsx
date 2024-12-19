@@ -14,10 +14,9 @@ export default function EmailVerification() {
   const router = useRouter();
 
   useEffect(() => {
-    // Verifique se está no cliente antes de acessar o window
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
-      setToken(params.get("token")); // Obtém o token e o armazena no estado
+      setToken(params.get("token"));
     }
   }, []);
 
