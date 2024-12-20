@@ -7,14 +7,24 @@ import { Label } from "@/components/ui/label";
 import { requestPasswordReset } from "@/services/endpoint/authService";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import spinnerloading from "./../../../public/isloading.svg";
 
 export default function RecoverAccount() {
   const [emailSent, setEmailSent] = useState(false);
   const [email, setEmail] = useState("");
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+
+    useEffect(() => {
+        if (error) {
+          const timer = setTimeout(() => {
+            setError("")
+          }, 8000)
+          return () => clearTimeout(timer);
+        }
+      }, [error])
 
 
   const handleSendEmail = async () => {

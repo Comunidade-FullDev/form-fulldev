@@ -27,9 +27,6 @@ export default function Register() {
   const [apiError, setApiError] = useState<string | null>(null)
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
-
-
-
   const handleCloseAlert = () => {
 
     setIsAlertOpen(false);

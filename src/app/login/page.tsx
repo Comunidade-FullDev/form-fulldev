@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -41,7 +41,16 @@ export default function LoginPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+      if (message) {
+        const timer = setTimeout(() => {
+          setMessage("")
+        }, 4000)
+        return () => clearTimeout(timer);
+      }
+    }, [message])
 
   const alternarVisibilidadeSenha = () => {
     setMostrarSenha(!mostrarSenha);
