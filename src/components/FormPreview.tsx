@@ -36,7 +36,6 @@ interface AnswerDTO {
 
 export default function FormPreview() {
   const [params, setParams] = useState<URLSearchParams | null>(null);
-
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState<FormResponse>({});
@@ -108,7 +107,16 @@ export default function FormPreview() {
     } finally {
       setLoading(false);
     }
-  };
+  }
+
+  useEffect(() => {
+    if (messagePassword) {
+      const timer = setTimeout(() => {
+        setMessagePassword("")
+      }, 3000)
+      return () => clearTimeout(timer);
+    }
+  }, [messagePassword])
 
   const handlePasswordSubmit = async () => {
     try {
@@ -124,47 +132,46 @@ export default function FormPreview() {
           options: q.type === "radio" || q.type === "checkbox" ? q.options : undefined,
         }))
       )
-      setShowPasswordModal(false);
-      localStorage.setItem("passwordForm", password);
+      setShowPasswordModal(false)
+      localStorage.setItem("passwordForm", password)
     } catch (err) {
-      setShowPasswordModal(true);
-      setMessagePassword("Senha inválida. Por favor, tente novamente.");
-      // console.error("Erro ao carregar formulário com senha", err);
+      setShowPasswordModal(true)
+      setMessagePassword("Senha inválida. Por favor, tente novamente.")
     }finally {
-      setLoading(false);
+      setLoading(false)
     }
 
   }
 
 
   const handleSubmit = async () => {
-    const params = new URLSearchParams(window.location.search);
-    const formId = params.get("form");
+    const params = new URLSearchParams(window.location.search)
+    const formId = params.get("form")
     if (!formId) {
-      alert("Formulário não encontrado!");
+      alert("Formulário não encontrado!")
       return;
     }
 
     const answers: AnswerDTO[] = Object.entries(responses).map(([questionId, response]) => ({
       questionId: parseInt(questionId, 10),
       response: Array.isArray(response) ? response.join(", ") : String(response),
-    }));
+    }))
 
     try {
-      await submitAnswers(formId, answers);
+      await submitAnswers(formId, answers)
       setSubmitted(true);
     } catch (error) {
-      console.error("Erro ao enviar respostas:", error);
+      console.error("Erro ao enviar respostas:", error)
     }
   };
 
   const handleNext = useCallback(() => {
     if (currentQuestion < totalQuestions - 1) {
-      setCurrentQuestion((curr) => curr + 1);
+      setCurrentQuestion((curr) => curr + 1)
     } else {
       setSubmitted(true);
     }
-  }, [currentQuestion, totalQuestions]);
+  }, [currentQuestion, totalQuestions])
 
   const handlePrevious = () => {
     if (currentQuestion > 0) {
@@ -180,10 +187,10 @@ export default function FormPreview() {
   }
 
   const isQuestionValid = (question: Question) => {
-    if (!question.required) return true;
-    const response = responses[question.id];
+    if (!question.required) return true
+    const response = responses[question.id]
     if (Array.isArray(response)) return response.length > 0;
-    return response !== undefined && response !== "";
+    return response !== undefined && response !== ""
   }
 
   useEffect(() => {
@@ -321,7 +328,8 @@ export default function FormPreview() {
               </motion.div>
             ))}
           </div>
-        );
+        )
+
       case "number":
         return (
           <Input
