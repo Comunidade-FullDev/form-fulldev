@@ -137,7 +137,7 @@ export default function FormPreview() {
     } catch (err) {
       setShowPasswordModal(true)
       setMessagePassword("Senha inválida. Por favor, tente novamente.")
-    }finally {
+    } finally {
       setLoading(false)
     }
 
@@ -196,7 +196,7 @@ export default function FormPreview() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Enter" && isQuestionValid(question)) {
-        handleNext();
+        handleNext()
       }
     }
     window.addEventListener("keydown", handleKeyDown)
@@ -387,6 +387,9 @@ export default function FormPreview() {
             >
               <h1 className="text-3xl md:text-4xl font-bold text-center mb-4">
                 {question.title}
+                {question.required === true && (
+                  <span className="text-red-500"> * </span>
+                )}
               </h1>
               {question.questionDescription && (
                 <p className="text-center text-muted-foreground mb-8">

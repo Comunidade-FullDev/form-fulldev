@@ -475,10 +475,12 @@ export default function FormBuilder() {
                   <FileEdit className="h-4 w-4" />
                   <span className="hidden sm:inline">Atualizar</span>
                 </Button>
+                {formData.isPublished == false &&(
                 <Button className="bg-primary hover:bg-primary/90" onClick={publishForm}>
                   <Send className="mr-2 h-4 w-4" />
                   <span className="hidden sm:inline">Publicar</span>
                 </Button>
+                )}
               </>
             ) : (
               <>

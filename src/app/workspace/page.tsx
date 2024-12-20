@@ -180,7 +180,9 @@ export default function Workspace() {
                               <Button variant="ghost" size="icon" onClick={() => setEditingForm(form)}>
                                 <FileEdit className="h-4 w-4" />
                               </Button>
-                              <ShareModal link={form.link} />
+                              {form.link !== null &&(
+                                <ShareModal link={form.link} />
+                              )}
                               <Button variant="ghost" size="icon" onClick={() => setDeletingForm(form)}>
                                 <Trash2 className="h-4 w-4" />
                               </Button>

@@ -37,9 +37,10 @@ export default function StatisticsPage() {
           averageTime: "N/A",
           questions: formData.questions.map((question) => {
             const questionAnswers = responseFormData
-              .map((answer) => answer.answers[question.id])
-              .filter((answer) => answer !== undefined)
-
+            .map((response) => response.answers[question.id])
+            .filter((response) => response !== undefined && response !== null);
+            
+            console.log("resposta mapeada: ", {questionId: question.id, respostas: questionAnswers})
             return {
               id: question.id,
               question: question.title,
@@ -49,6 +50,7 @@ export default function StatisticsPage() {
             }
           })
         }
+
 
         console.log(updatedFormData)
         console.log(responseFormData)
@@ -95,7 +97,7 @@ export default function StatisticsPage() {
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);
       link.setAttribute("href", url);
-      link.setAttribute("download", "estatisticas_pesquisa.csv");
+      link.setAttribute("download", "respostas_do_form.csv");
       link.style.visibility = 'hidden';
       document.body.appendChild(link);
       link.click();
@@ -193,21 +195,21 @@ export default function StatisticsPage() {
 
         <TabsContent value="responses" className="space-y-6">
           <div className="w-full">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-muted">
-                  <th className="text-left p-3 font-medium bg-muted w-[900px] top-0 sticky left-0 z-30">
-                    Perguntas
-                  </th>
-                  {mockFormData.questions[0]?.responses?.map((_: any, index: number) => (
-                    <th key={index} className="text-left p-2 sticky top-0 z-20 bg-muted font-medium whitespace-nowrap">
-                      Respondente {index + 1}
+            <ScrollArea className="w-full max-h-[calc(80vh-100px)] overflow-x-auto overflow-y-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-muted">
+                    <th className="text-left p-3 font-medium bg-muted w-[900px] top-0 sticky left-0 z-30">
+                      Perguntas
                     </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <ScrollArea className="w-full max-h-[calc(80vh-100px)] overflow-x-auto overflow-y-auto">
+                    {mockFormData.questions[0]?.responses?.map((_: any, index: number) => (
+                      <th key={index} className="text-left p-2 sticky top-0 z-20 bg-muted font-medium whitespace-nowrap">
+                        Respondente {index + 1}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
                   {mockFormData.questions.map((question: { id: React.Key | null | undefined; question: string | undefined; responses: any[] }) => (
                     <tr key={question.id} className="border-b last:border-b-0">
                       <td className="p-2 font-medium bg-background whitespace-normal w-[700px] sticky left-0 z-0">
@@ -218,9 +220,9 @@ export default function StatisticsPage() {
                       ))}
                     </tr>
                   ))}
-                </ScrollArea>
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </ScrollArea>
           </div>
         </TabsContent>
 
