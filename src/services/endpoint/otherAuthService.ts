@@ -4,10 +4,10 @@ export interface LoginResponseDTO {
 }  
 
 export const redirectToGoogleAuth = (): void => {
-      window.location.href = "https://fulldevapi.online/oauth2/authorization/google"
+      window.location.href = process.env.NEXT_API_GOOGLE_URL || ""
   };
 
 export const redirectToFacebookAuth = (): void =>{
-    window.location.href = "https://fulldevapi.online/oauth2/authorization/facebook"
+    window.location.href = process.env.NEXT_API_FACEBOOK_URL || ""
 }
   
