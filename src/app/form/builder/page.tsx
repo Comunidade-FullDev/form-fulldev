@@ -456,12 +456,14 @@ export default function FormBuilder() {
             <Dialog
               open={showStatistics}
               onOpenChange={setShowStatistics}
-            >
+              >
               <DialogTrigger asChild>
+              {formData?.responsesCount && formData.responsesCount > 0 && (
                 <Button variant="outline" size="sm">
                   <BarChart className="mr-2 h-4 w-4" />
                   <span className="hidden sm:inline">Estatísticas</span>
                 </Button>
+              )}
               </DialogTrigger>
               <DialogContent className="max-w-full w-full h-[90vh] p-0 overflow-y-auto">
                 <StatisticsPage />
