@@ -88,6 +88,7 @@ export interface CreateForm {
   link: string;
   createdAt: Date;
   createdBy: string;
+  responsesCount: number;
   isPublished: boolean;
   questions: Array<{
     id: number;
