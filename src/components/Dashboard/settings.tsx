@@ -178,7 +178,6 @@ export default function Settings() {
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="public">Público</SelectItem>
-                  <SelectItem value="private">Privado</SelectItem>
                   <SelectItem value="password">Protegido por Senha</SelectItem>
                 </SelectContent>
               </Select>

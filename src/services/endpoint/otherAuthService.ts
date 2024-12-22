@@ -4,10 +4,10 @@ export interface LoginResponseDTO {
 }  
 
 export const redirectToGoogleAuth = (): void => {
-      window.location.href = process.env.NEXT_API_GOOGLE_URL || ""
+      window.location.href = process.env.NEXT_PUBLIC_API_GOOGLE_URL || ""
   };
 
 export const redirectToFacebookAuth = (): void =>{
-    window.location.href = process.env.NEXT_API_FACEBOOK_URL || ""
+    window.location.href = process.env.NEXT_PUBLIC_API_FACEBOOK_URL || ""
 }
   

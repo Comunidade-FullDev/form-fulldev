@@ -37,10 +37,10 @@ export default function StatisticsPage() {
           averageTime: "N/A",
           questions: formData.questions.map((question) => {
             const questionAnswers = responseFormData
-            .map((response) => response.answers[question.id])
-            .filter((response) => response !== undefined && response !== null);
-            
-            console.log("resposta mapeada: ", {questionId: question.id, respostas: questionAnswers})
+              .map((response) => response.answers[question.id])
+              .filter((response) => response !== undefined && response !== null);
+
+            console.log("resposta mapeada: ", { questionId: question.id, respostas: questionAnswers })
             return {
               id: question.id,
               question: question.title,
@@ -146,7 +146,7 @@ export default function StatisticsPage() {
                 <CardTitle>{selectedQuestion?.question}</CardTitle>
                 <CardDescription>Distribuição das respostas</CardDescription>
               </CardHeader>
-              <CardContent className="h-[250px] sm:h-[300px] md:h-[350px]">
+              <CardContent className="h-[80%] sm:h-[80%] md:h-[80%] mb-10 sm:mb-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
@@ -157,6 +157,7 @@ export default function StatisticsPage() {
                       outerRadius={80}
                       fill="#8884d8"
                       dataKey="value"
+
                     >
                       {pieChartData.map((_entry: any, index: number) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -194,38 +195,52 @@ export default function StatisticsPage() {
         </TabsContent>
 
         <TabsContent value="responses" className="space-y-6">
-          <div className="w-full">
-            <ScrollArea className="w-full max-h-[calc(80vh-100px)] overflow-x-auto overflow-y-auto">
+          <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
+            <Card className="col-span-2 md:col-span-1 transition-all duration-300 hover:shadow-lg">
+              <CardHeader>
+                <CardTitle>Respostas</CardTitle>
+                <CardDescription>Visualize as respostas das perguntas</CardDescription>
+              </CardHeader>
+              <CardContent className="w-full overflow-auto">
+              <ScrollArea className="w-full h-[80vh] p-6 overflow-x-auto ">
               <table className="w-full border-collapse">
-                <thead>
-                  <tr className="bg-muted">
-                    <th className="text-left p-3 font-medium bg-muted w-[900px] top-0 sticky left-0 z-30">
-                      Perguntas
-                    </th>
-                    {mockFormData.questions[0]?.responses?.map((_: any, index: number) => (
-                      <th key={index} className="text-left p-2 sticky top-0 z-20 bg-muted font-medium whitespace-nowrap">
-                        Respondente {index + 1}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {mockFormData.questions.map((question: { id: React.Key | null | undefined; question: string | undefined; responses: any[] }) => (
-                    <tr key={question.id} className="border-b last:border-b-0">
-                      <td className="p-2 font-medium bg-background whitespace-normal w-[700px] sticky left-0 z-0">
-                        {question?.question || "Pergunta não especificada"}
-                      </td>
-                      {question.responses.map((response: string, index: number) => (
-                        <td key={index} className="p-2">{response || 'Nenhuma resposta'}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </ScrollArea>
+                    <thead>
+                      <tr className="bg-muted">
+                        <th className="text-left p-3 font-medium bg-muted w-[50%] sm:w-[40%] lg:w-[50%] top-0 sticky left-0 z-30">
+                          Perguntas
+                        </th>
+                        {mockFormData.questions[0]?.responses?.map((_: any, index: number) => (
+                          <th
+                            key={index}
+                            className="text-left p-2 sticky top-0 z-20 bg-muted font-medium whitespace-nowrap"
+                          >
+                            Respondente {index + 1}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mockFormData.questions.map(
+                        (question: { id: React.Key | null | undefined; question: string | undefined; responses: any[] }) => (
+                          <tr key={question.id} className="border-b last:border-b-0">
+                            <td className="p-5 font-medium bg-background whitespace-normal w-[50%] sm:w-[40%] lg:w-[300px] sticky left-0 z-10">
+                              {question?.question || "Pergunta não especificada"}
+                            </td>
+                            {question.responses.map((response: string, index: number) => (
+                              <td key={index} className="p-2 w-[50%] sm:w-[auto]">
+                                {response || "Nenhuma resposta"}
+                              </td>
+                            ))}
+                          </tr>
+                        )
+                      )}
+                    </tbody>
+                  </table>
+                </ScrollArea>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
-
       </Tabs>
 
       <div className="mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
@@ -240,36 +255,44 @@ export default function StatisticsPage() {
             <DialogHeader className="p-6 pb-0">
               <DialogTitle>Todas as Respostas</DialogTitle>
             </DialogHeader>
-            <ScrollArea className="h-[calc(80vh-100px)] w-full p-6">
-              <div className="w-full min-w-[800px]">
+            <ScrollArea className="h-[calc(80vh-100px)] w-full p-6 overflow-auto">
+              <div className="w-full lg:min-w-[800px] min-w-[100%]">
                 <table className="w-full border-collapse">
                   <thead>
                     <tr className="bg-muted">
-                      <th className="text-left p-3 font-medium bg-muted w-[900px] top-0 sticky left-0 z-30">
+                      <th className="text-left p-3 font-medium bg-muted w-[50%] sm:w-[50%] lg:w-[50%] top-0 sticky left-0 z-30">
                         Perguntas
                       </th>
                       {mockFormData.questions[0]?.responses?.map((_: any, index: number) => (
-                        <th key={index} className="text-left p-2 sticky top-0 z-20 bg-muted font-medium whitespace-nowrap">
+                        <th
+                          key={index}
+                          className="text-left p-2 sticky top-0 z-20 bg-muted font-medium whitespace-nowrap"
+                        >
                           Respondente {index + 1}
                         </th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {mockFormData.questions.map((question: { id: React.Key | null | undefined; question: string | undefined; responses: any[] }) => (
-                      <tr key={question.id} className="border-b last:border-b-0">
-                        <td className="p-2 font-medium bg-background whitespace-normal w-[700px] sticky left-0 z-0">
-                          {question?.question || "Pergunta não especificada"}
-                        </td>
-                        {question.responses.map((response: string, index: number) => (
-                          <td key={index} className="p-2">{response || 'Nenhuma resposta'}</td>
-                        ))}
-                      </tr>
-                    ))}
+                    {mockFormData.questions.map(
+                      (question: { id: React.Key | null | undefined; question: string | undefined; responses: any[] }) => (
+                        <tr key={question.id} className="border-b last:border-b-0">
+                          <td className="p-2 font-medium bg-background whitespace-normal w-[50%] sm:w-[50%] lg:w-[50%] sticky left-0 z-10">
+                            {question?.question || "Pergunta não especificada"}
+                          </td>
+                          {question.responses.map((response: string, index: number) => (
+                            <td key={index} className="p-2 w-[50%] sm:w-[50%] lg:w-[50%]">
+                              {response || "Nenhuma resposta"}
+                            </td>
+                          ))}
+                        </tr>
+                      )
+                    )}
                   </tbody>
                 </table>
               </div>
             </ScrollArea>
+
           </DialogContent>
         </Dialog>
         <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={exportData}>
