@@ -30,3 +30,24 @@
 <li>TailwindCSS</li>
 <li>AOS Animation</li>
 </ul>
+
+---
+
+## Contributors
+
+<div>
+  <a href="https://github.com/EricSouzaDosSantos">
+    <img src="https://github.com/EricSouzaDosSantos.png" width="60px"/>
+  </a>
+  <a href="https://github.com/gabrieldiassantiago">
+    <img src="https://github.com/gabrieldiassantiago.png" width="60px"/>
+  </a>
+  <a href="https://github.com/Carlosaugusto222">
+    <img src="https://github.com/Carlosaugusto222.png" width="60px"/>
+  </a>
+  <a href="https://github.com/DevGustavoGantois">
+    <img src="https://github.com/DevGustavoGantois.png" width="60px"/>
+  </a>
+</div>
+
+---
