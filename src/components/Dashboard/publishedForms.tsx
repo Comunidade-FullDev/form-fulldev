@@ -54,13 +54,13 @@ export default function PublishedForms() {
       {isLoading ? (
       
           <p>Carregando...</p>
-        ) : error ? (
-          <p className="text-red-500">{error}</p>
         ) : filteredForms.length === 0 && searchTerm !== "" ? (
           <p className="p-4 text-center text-gray-500">Nenhum formulário publicado com o título "{searchTerm}" foi encontrado.</p>
         ) :  forms.length === 0  || filteredForms.length === 0 ? ( 
           <p className="p-4 text-center text-gray-500">Você ainda não publicou nenhum formulário.</p>
-        ) :(
+        ): error ? (
+          <p className="text-red-500">{error}</p>
+        )  :(
           <Table>
             <TableHeader>
               <TableRow>
