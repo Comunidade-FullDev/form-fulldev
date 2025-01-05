@@ -15,6 +15,8 @@ import { getPublicForm, submitAnswers } from "@/services/endpoint/form"
 import LoginModal from "./ModaLogin"
 import Cookies from "js-cookie";
 import ModalPassword from "./../components/ui/modal-password"
+import Image from "next/image";
+import spinnerloading from "./../../public/isloading.svg";
 
 
 interface Question {
@@ -35,6 +37,7 @@ interface AnswerDTO {
 }
 
 export default function FormPreview() {
+  const [isLoading, setIsLoading] = useState(false);
   const [params, setParams] = useState<URLSearchParams | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -42,6 +45,7 @@ export default function FormPreview() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [submitError, setSubmitError] = useState<string | null>(null); 
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [password, setPassword] = useState("");
@@ -90,7 +94,8 @@ export default function FormPreview() {
   const fetchFormData = async (id: string, formHasLoginType: string, password: string) => {
     try {
       localStorage.removeItem("passwordForm")
-      setLoading(true);
+      setLoading(true)
+      setIsLoading(true)
       const data = await getPublicForm(id, formHasLoginType, password);
       const mappedQuestions = data.questions.map((q) => ({
         id: q.id.toString(),
@@ -102,10 +107,15 @@ export default function FormPreview() {
         options: q.type === 'radio' || q.type === 'checkbox' ? q.options : undefined,
       }));
       setQuestions(mappedQuestions);
-    } catch (error) {
-      setError("Falha ao carregar formulário. Verifique sua autenticação.");
+    }catch (error: any) {
+        if (error.response && error.response.data) {
+          setError(error.response.data);
+        } else {
+          setError("Ocorreu um erro ao carregar formulário. Por favor, tente novamente mais tarde.");
+        }
     } finally {
-      setLoading(false);
+      setLoading(false)
+      setIsLoading(false)
     }
   }
 
@@ -158,11 +168,18 @@ export default function FormPreview() {
     }))
 
     try {
+      setIsLoading(true)
       await submitAnswers(formId, answers)
-      setSubmitted(true);
-    } catch (error) {
-      console.error("Erro ao enviar respostas:", error)
-    }
+      setSubmitted(true)
+    } catch (error: any) {
+        if (error.response && error.response.data) {
+          setSubmitError(error.response.data);
+        } else {
+          setSubmitError("Ocorreu um problema ao enviar suas respostas. Por favor, tente novamente mais tarde.");
+        }
+    }finally {
+      setIsLoading(false)
+  }
   };
 
   const handleNext = useCallback(() => {
@@ -213,9 +230,22 @@ export default function FormPreview() {
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return (
+    <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        {...({ className: "min-h-screen bg-background flex items-center justify-center p-4" } as HTMLMotionProps<'div'>)}
+      >
+        <div className="text-center space-y-4 w-96">
+          <h2 className="text-2xl font-bold text-red-600">Ocorreu um erro!</h2>
+          <p className="text-muted-foreground">{error}</p>
+          
+        </div>
+      </motion.div>
+    );
   }
-
+  
   if (loginType === "password" && !localStorage.getItem("passwordForm")) {
     return (
       <>
@@ -251,10 +281,18 @@ export default function FormPreview() {
   }
 
   if (loading) {
-    return <div>carregando</div>
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900">
+        <Image
+          src={spinnerloading}
+          alt="Carregando"
+          className="animate-spin h-12 w-12 mb-4"
+        />
+        <p className="text-lg text-gray-300">Carregando perguntas...</p>
+      </div>
+    )
   }
-
-
+  
   const renderQuestion = (question: Question) => {
     switch (question.type) {
       case "text":
@@ -370,6 +408,32 @@ export default function FormPreview() {
     );
   }
 
+  if (submitError) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        {...({ className: "min-h-screen bg-background flex items-center justify-center p-4" } as HTMLMotionProps<'div'>)}
+      >
+        <div className="text-center space-y-4 w-96">
+          <h2 className="text-2xl font-bold text-red-600">Erro ao enviar respostas</h2>
+          <p className="text-muted-foreground">{submitError}</p>
+          <Button
+            variant="default"
+            onClick={() => {
+              setSubmitError(null);
+              setIsLoading(false);
+            }}
+          >
+            Tentar novamente
+          </Button>
+        </div>
+      </motion.div>
+    );
+  }
+  
+
   return (
     <>
       <div className="min-h-screen bg-background flex flex-col">
@@ -418,7 +482,12 @@ export default function FormPreview() {
               onClick={currentQuestion === totalQuestions - 1 ? handleSubmit : handleNext}
               disabled={!isQuestionValid(question)}
             >
-              {currentQuestion === totalQuestions - 1 ? "Enviar" : "Próxima"}
+              {currentQuestion === totalQuestions - 1 ? isLoading ? (
+                <Image src={spinnerloading} alt="Carregando" className="animate-spin h-5 w-5 mr-3" />
+              ) : (
+                "Enviar"
+              ) : "Próxima"}
+              {}
               <ChevronRight className="ml-2 h-4 w-4" />
             </Button>
           </div>
