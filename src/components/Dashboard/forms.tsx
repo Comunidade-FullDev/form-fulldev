@@ -115,10 +115,8 @@ export default function Forms() {
                     <Button variant="ghost" size="icon" className="md:block">
                       <Share2 className="h-4 w-4" />
                     </Button>
-                    <Button
-                    variant="ghost"
-                      size="icon"
-                      className="myWonderfulButton md:hidden"
+                    {/* <Button
+                      className='myWonderfulButton md:hidden'
                       onClick={
                         () => {
                           navigator.share({
@@ -130,7 +128,7 @@ export default function Forms() {
                         }
                       }>
                       <Share2 className="h-4 w-4" />
-                    </Button>
+                    </Button> */}
                     <Button
                       variant="ghost"
                       size="icon"

@@ -180,8 +180,26 @@ export default function Workspace() {
                               <Button variant="ghost" size="icon" onClick={() => setEditingForm(form)}>
                                 <FileEdit className="h-4 w-4" />
                               </Button>
-                              {form.link !== null &&(
-                                <ShareModal link={form.link} />
+                              {form.link !== null && (
+                                <div className="hidden md:block">
+                                  <ShareModal link={form.link} />
+                                </div>
+                              )}
+
+                              {/* Exibe o botão de compartilhamento nativo no mobile */}
+                              {form.link !== null && (
+                                <Button
+                                  className="bg-transparent md:hidden"
+                                  onClick={() => {
+                                    navigator.share({
+                                      title: 'Share',
+                                      text: 'whatevs',
+                                      url: form.link
+                                    });
+                                  }}
+                                >
+                                  <Share2 className="h-4 w-4" />
+                                </Button>
                               )}
                               <Button variant="ghost" size="icon" onClick={() => setDeletingForm(form)}>
                                 <Trash2 className="h-4 w-4" />
