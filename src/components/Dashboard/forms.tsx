@@ -112,7 +112,23 @@ export default function Forms() {
                     >
                       <FileEdit className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon">
+                    <Button variant="ghost" size="icon" className="md:block">
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                    <Button
+                    variant="ghost"
+                      size="icon"
+                      className="myWonderfulButton md:hidden"
+                      onClick={
+                        () => {
+                          navigator.share({
+                            title: 'Share',
+                            text: 'whatevs',
+                            url: form.link
+                          }
+                          )
+                        }
+                      }>
                       <Share2 className="h-4 w-4" />
                     </Button>
                     <Button
@@ -122,6 +138,7 @@ export default function Forms() {
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
+
                   </div>
                 </TableCell>
               </TableRow>
