@@ -110,37 +110,13 @@ export default function Settings() {
                 <Input placeholder="Meu Espaço de Trabalho" {...field} />
               </FormControl>
               <FormDescription>
-                Este é o nome que aparecerá em seus formulários.
+                Este é o nome que aparecerá no seu espaço de trabalho.
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="language"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Idioma</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione um idioma" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  <SelectItem value="pt-BR">Português (Brasil)</SelectItem>
-                  <SelectItem value="en-US">English (US)</SelectItem>
-                  <SelectItem value="es-ES">Español</SelectItem>
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                Idioma padrão para seus formulários.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        
         <FormField
           control={form.control}
           name="emailNotifications"
@@ -191,6 +167,7 @@ export default function Settings() {
 
         <Button type="submit">Salvar Alterações</Button>
       </form>
+      
       {isModalOpen && (
         <Modal title="Definir Senha">
           <p>Digite a senha para proteger o formulário:</p>
