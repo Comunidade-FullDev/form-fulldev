@@ -10,22 +10,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ChevronLeft, ChevronRight, FileEdit, Import, Menu, Plus, Share2, Trash2 } from 'lucide-react';
+import {  FileEdit, Menu, Plus, Share2, Trash2 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Link from "next/link";
 import { EditFormDialog } from "@/components/EditFormDialog";
 import { DeleteFormDialog } from "@/components/DeleteFormDialog";
-import { Form, FormWorkspace } from '@/types/Form';
+import { Form } from '@/types/Form';
 import { deleteForm, getForms } from '@/services/endpoint/form';
 import SidebarMenu from '@/components/SidebarMenu';
 import Settings from '@/components/Dashboard/settings';
 import PublishedForms from '@/components/Dashboard/publishedForms';
-import { useRouter } from 'next/navigation';
 import { ShareModal } from '@/components/CopyAndShare';
-import spinnerloading from "./../../../public/isloading.svg";
-import Image from "next/image";
-
 
 export default function Workspace() {
   const [forms, setForms] = useState<Form[]>([]);
@@ -35,8 +31,6 @@ export default function Workspace() {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-
 
   const handleDelete = async (id: string) => {
     try {
@@ -76,7 +70,6 @@ export default function Workspace() {
     );
     setFilteredForms(filtered);
   };
-
 
   useEffect(() => {
     loadForms();
@@ -186,7 +179,6 @@ export default function Workspace() {
                                 </div>
                               )}
 
-                              {/* Exibe o botão de compartilhamento nativo no mobile */}
                               {form.link !== null && (
                                 <Button
                                   className="bg-transparent md:hidden"
@@ -211,7 +203,6 @@ export default function Workspace() {
                     )}
                   </TableBody>
                 </Table>
-
               </div>
             </TabsContent>
             <TabsContent value="publicados">
