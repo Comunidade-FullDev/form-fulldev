@@ -17,12 +17,13 @@ export function CopyButton({ textToCopy }: { textToCopy: string }) {
   );
 }
 
-
 export function ShareModal({ link }: { link: string }) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const openModal = () => setIsShareModalOpen(true);
   const closeModal = () => setIsShareModalOpen(false);
+
+  const encodedLink = encodeURIComponent(link);
 
   return (
     <>
@@ -45,7 +46,7 @@ export function ShareModal({ link }: { link: string }) {
               <button
                 className="flex flex-col items-center"
                 onClick={() => {
-                  window.open(`https://www.facebook.com/sharer/sharer.php?u=${link}`, "_blank");
+                  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodedLink}`, "_blank");
                 }}
               >
                 <FaFacebook className="text-blue-600 text-4xl" />
@@ -54,7 +55,7 @@ export function ShareModal({ link }: { link: string }) {
               <button
                 className="flex flex-col items-center"
                 onClick={() => {
-                  window.open(`https://twitter.com/intent/tweet?url=${link}`, "_blank");
+                  window.open(`https://twitter.com/intent/tweet?url=${encodedLink}`, "_blank");
                 }}
               >
                 <FaTwitter className="text-blue-400 text-4xl" />
@@ -63,7 +64,7 @@ export function ShareModal({ link }: { link: string }) {
               <button
                 className="flex flex-col items-center"
                 onClick={() => {
-                  window.open(`https://wa.me/?text=${link}`, "_blank");
+                  window.open(`https://wa.me/?text=${encodedLink}`, "_blank");
                 }}
               >
                 <FaWhatsapp className="text-green-500 text-4xl" />
