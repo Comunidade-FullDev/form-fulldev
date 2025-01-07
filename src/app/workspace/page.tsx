@@ -24,6 +24,10 @@ import PublishedForms from '@/components/Dashboard/publishedForms';
 import { ShareModal } from '@/components/CopyAndShare';
 
 export default function Workspace() {
+  const [workspaceName, setWorkspaceName] = useState(
+    localStorage.getItem("WorkspaceName") || "Meu Espaço de Trabalho"
+  );
+  const messageShare = localStorage.getItem("sharedMessage") || ""
   const [forms, setForms] = useState<Form[]>([]);
   const [filteredForms, setFilteredForms] = useState<Form[]>([]);
   const [editingForm, setEditingForm] = useState<Form | null>(null);
@@ -69,8 +73,8 @@ export default function Workspace() {
       form.title.toLowerCase().includes(searchValue.toLowerCase())
     );
     setFilteredForms(filtered);
-  };
-
+  }
+  
   useEffect(() => {
     loadForms();
   }, []);
@@ -83,7 +87,7 @@ export default function Workspace() {
         </div>
         <div className="flex-1 overflow-auto p-6 rounded-xl border border-border shadow-lg">
           <div className="mb-6 flex items-center justify-between">
-            <h1 className="text-2xl font-bold">Meu espaço de trabalho</h1>
+            <h1 className="text-2xl font-bold">{workspaceName}</h1>
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden">
@@ -175,7 +179,7 @@ export default function Workspace() {
                               </Button>
                               {form.link !== null && (
                                 <div className="hidden md:block">
-                                  <ShareModal link={form.link} />
+                                  <ShareModal link={form.link} message={messageShare} />
                                 </div>
                               )}
 
@@ -185,7 +189,7 @@ export default function Workspace() {
                                   onClick={() => {
                                     navigator.share({
                                       title: 'Share',
-                                      text: 'whatevs',
+                                      text: messageShare,
                                       url: form.link
                                     });
                                   }}
