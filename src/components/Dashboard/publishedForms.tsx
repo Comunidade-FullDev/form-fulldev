@@ -11,6 +11,7 @@ import { CopyButton, ShareModal } from '../CopyAndShare';
 
 
 export default function PublishedForms() {
+  const sharedMessage = localStorage.getItem("sharedMessage") || ""
   const [searchTerm, setSearchTerm] = useState('');
   const [forms, setForms] = useState<FormWorkspace[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -85,7 +86,7 @@ export default function PublishedForms() {
 
                       <CopyButton textToCopy={form.link} />
 
-                      <ShareModal link={form.link} />
+                      <ShareModal link={form.link} message={sharedMessage} />
                       
                   </TableCell>
                 </TableRow>
