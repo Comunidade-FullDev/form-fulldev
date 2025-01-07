@@ -17,13 +17,14 @@ export function CopyButton({ textToCopy }: { textToCopy: string }) {
   );
 }
 
-export function ShareModal({ link }: { link: string }) {
+export function ShareModal({ link, message }: { link: string, message: string }) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const openModal = () => setIsShareModalOpen(true);
   const closeModal = () => setIsShareModalOpen(false);
 
   const encodedLink = encodeURIComponent(link);
+  const encodedMessage = encodeURIComponent(message);
 
   return (
     <>
@@ -46,8 +47,10 @@ export function ShareModal({ link }: { link: string }) {
               <button
                 className="flex flex-col items-center"
                 onClick={() => {
-                  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodedLink}`, "_blank");
-                }}
+                  window.open(
+                    `https://www.facebook.com/sharer/sharer.php?u=${encodedLink}&quote=${encodedMessage}`,
+                    "_blank"
+                  );                }}
               >
                 <FaFacebook className="text-blue-600 text-4xl" />
                 <span className="text-sm mt-2">Facebook</span>
@@ -55,8 +58,10 @@ export function ShareModal({ link }: { link: string }) {
               <button
                 className="flex flex-col items-center"
                 onClick={() => {
-                  window.open(`https://twitter.com/intent/tweet?url=${encodedLink}`, "_blank");
-                }}
+                  window.open(
+                    `https://twitter.com/intent/tweet?url=${encodedLink}&text=${encodedMessage}`,
+                    "_blank"
+                  );                }}
               >
                 <FaTwitter className="text-blue-400 text-4xl" />
                 <span className="text-sm mt-2">Twitter</span>
@@ -64,8 +69,10 @@ export function ShareModal({ link }: { link: string }) {
               <button
                 className="flex flex-col items-center"
                 onClick={() => {
-                  window.open(`https://wa.me/?text=${encodedLink}`, "_blank");
-                }}
+                  window.open(
+                    `https://wa.me/?text=${encodedMessage}%20${encodedLink}`,
+                    "_blank"
+                  );                }}
               >
                 <FaWhatsapp className="text-green-500 text-4xl" />
                 <span className="text-sm mt-2">WhatsApp</span>
